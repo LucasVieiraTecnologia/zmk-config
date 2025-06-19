@@ -1,73 +1,81 @@
 / {
     chosen {
         aliases {
+            // Alias para 'pro_micro_i2c', necessário para o sofle.dtsi
             pro_micro_i2c = &i2c0;
         };
     };
 
     &i2c0 {
-        status = "okay";
-        // Se o seu Sofle usa um expansor de GPIO I2C (tipo PCF8574, MCP23017), descomente e ajuste aqui:
+        status = "okay"; // Habilita o controlador I2C0
+
+        // --- Expansor de GPIO I2C (Descomente e ajuste se o seu Sofle usa um) ---
+        // Exemplo para PCF8574 (endereço 0x20) - MUITO COMUM NO SOFLE PARA MATRIZ
         /*
         pcf8574_0: pcf8574@20 {
-            compatible = "nxp,pcf8574"; // ou "microchip,mcp23017"
-            reg = <0x20>;
+            compatible = "nxp,pcf8574"; // Ou "microchip,mcp23017" se for esse chip
+            reg = <0x20>; // Endereço I2C do seu expansor (verifique o datasheet ou esquema)
             gpio-cells = <2>;
             #gpio-cells = <2>;
+            // Se o expansor controla as linhas da matriz e precisa de pull-ups:
+            // gpios = <&pcf8574_0 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
+            //         <&pcf8574_0 1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
+            //         <&pcf8574_0 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
+            //         <&pcf8574_0 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
+            //         <&pcf8574_0 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
+            //         <&pcf8574_0 5 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
+            //         <&pcf8574_0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
+            //         <&pcf8574_0 7 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            //         ;
         };
         */
 
-        // Se o seu Sofle tem um display OLED, descomente e ajuste aqui:
+        // --- Display OLED (Descomente e ajuste se o seu Sofle tem um no lado esquerdo) ---
+        // Exemplo para SSD1306 (endereço 0x3c)
         /*
         oled: oled@3c {
             compatible = "solomon,ssd1306fb";
-            reg = <0x3c>;
+            reg = <0x3c>; // Endereço I2C do seu OLED (geralmente 0x3c ou 0x3d)
             width = <128>;
             height = <64>;
+            // Se o seu OLED precisa de pinos RST/D/C via I2C, adicione aqui (verifique o esquema do Sofle):
+            // reset-gpios = <&gpio0 10 GPIO_ACTIVE_HIGH>;
+            // data-cmd-gpios = <&gpio0 9 GPIO_ACTIVE_HIGH>;
         };
         */
     };
 
-    // --- Adicione esta seção para habilitar a UART0 (para Serial USB/COM) ---
-/ {
-    chosen {
-        aliases {
-            pro_micro_i2c = &i2c0;
+    // --- SEÇÃO CRÍTICA PARA A PORTA COM USB (CDC ACM) ---
+    // Habilita a UART0 no Devicetree e a configura para a porta serial virtual.
+    // Esta é a tentativa mais robusta para resolver o aviso DT_HAS_ZEPHYR_CDC_ACM_UART_ENABLED.
+    &uart0 {
+        status = "okay"; // Liga o periférico UART0
+        compatible = "nordic,nrf-uarte"; // Tipo de periférico UART no nRF52840
+        current-speed = <115200>; // Velocidade de comunicação padrão
+
+        // Este nó filho é o que vincula a UART0 à funcionalidade CDC ACM (Serial Virtual)
+        cdc_acm_uart: cdc_acm_uart {
+            compatible = "zephyr,cdc-acm-uart";
+            // Opcional: Você pode dar um nome mais específico para a porta se quiser.
+            // cdc-acm-port-name = "ZMK_Serial";
         };
+
+        // NOTA: Para o nice!nano v2, os pinos RX/TX da UART0 (P0.06/P0.08)
+        // geralmente são definidos no nice_nano_v2.dts base e não precisam ser
+        // explicitados aqui, a menos que haja um conflito ou você queira mudar.
+        // tx-pin = <6>;
+        // rx-pin = <8>;
     };
 
-    &i2c0 {
-        status = "okay";
-        // Se o seu Sofle usa um expansor de GPIO I2C (tipo PCF8574, MCP23017), descomente e ajuste aqui:
-        /*
-        pcf8574_0: pcf8574@20 {
-            compatible = "nxp,pcf8574"; // ou "microchip,mcp23017"
-            reg = <0x20>;
-            gpio-cells = <2>;
-            #gpio-cells = <2>;
-        };
-        */
-
-        // Se o seu Sofle tem um display OLED, descomente e ajuste aqui:
-        /*
-        oled: oled@3c {
-            compatible = "solomon,ssd1306fb";
-            reg = <0x3c>;
-            width = <128>;
-            height = <64>;
-        };
-        */
+    // --- Outras definições específicas do seu teclado que podem ir em um overlay ---
+    // (Ex: encoders, se eles não usarem I2C)
+    /*
+    rotary_encoder_1: rotary_encoder_1 {
+        compatible = "alps,ec11";
+        label = "ENCODER_1";
+        a-gpios = <&gpio0 15 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+        b-gpios = <&gpio0 16 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+        resolution = <4>;
     };
-
-    // --- Adicione esta seção para habilitar a UART0 (para Serial USB/COM) ---
-&uart0 {
-    status = "okay";
-    compatible = "nordic,nrf-uarte"; // Tipo de periférico UART no nRF52840
-    current-speed = <115200>; // Velocidade da comunicação
-
-    // Adicione estas linhas para criar o nó cdc_acm_uart
-    cdc_acm_uart: cdc_acm_uart {
-        compatible = "zephyr,cdc-acm-uart"; // Esta linha vincula a UART ao CDC ACM
-        // cdc-acm-port-name = "CDC_ACM_0"; // Nome opcional para a porta
-    };
+    */
 };
