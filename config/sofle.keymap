@@ -100,23 +100,24 @@
 &ext_power EP_TOG &rgb_ug RGB_HUD &rgb_ug RGB_HUI &rgb_ug RGB_SAD &rgb_ug RGB_SAI &rgb_ug RGB_EFF                            &none &none &none &none &none &none
 &none             &rgb_ug RGB_BRD &rgb_ug RGB_BRI &none           &none           &none                                      &none &none &none &none &none &none
 &none             &none           &none           &none           &none           &none             &rgb_ug RGB_TOG &none &none &none &none &none &none &none
-                            &none           &none           &none           &none             &none           &none &none &none &none &none
+                               &none           &none           &none           &none             &none           &none &none &none &none
             >;
         };
 
     }; // Fim do keymap
-
+    
     // --- SEÇÃO PARA DESBLOQUEAR O ZMK STUDIO ---
     // Você pode ajustar as 'key-positions' e 'layers' conforme sua preferência.
-    // Posição 0 e 1 são geralmente as duas primeiras teclas da linha superior (ex: Esc e Q).
+    // Posição 0 e 1 são geralmente as duas primeiras teclas da linha superior (ex: Grave e 1).
     // Ajuste as posições de acordo com seu matrix-transform.
     combos {
         compatible = "zmk,combos";
         studio_unlock_combo {
             bindings = <&studio_unlock>;
-            key-positions = <0 1>; // Exemplo: Posição 0 e Posição 1 do seu teclado
+            key-positions = <0 1>; // EX: Posição 0 (Grave) e Posição 1 (tecla 1)
+                                   // Se quiser usar ESC (pos. 6) e Q (pos. 7): key-positions = <6 7>;
             #binding-cells = <0>;
             layers = <0>; // Combo ativo na camada BASE (default)
         };
     };
-};
+}; // Esta chave final fecha o nó raiz '/' - NÃO REMOVA!
