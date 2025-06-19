@@ -1,1 +1,39 @@
+/ {
+    chosen {
+        aliases {
+            pro_micro_i2c = &i2c0;
+        };
+    };
 
+    &i2c0 {
+        status = "okay";
+        // Se o seu Sofle usa um expansor de GPIO I2C (tipo PCF8574, MCP23017), descomente e ajuste aqui:
+        /*
+        pcf8574_0: pcf8574@20 {
+            compatible = "nxp,pcf8574"; // ou "microchip,mcp23017"
+            reg = <0x20>;
+            gpio-cells = <2>;
+            #gpio-cells = <2>;
+        };
+        */
+
+        // Se o seu Sofle tem um display OLED, descomente e ajuste aqui:
+        /*
+        oled: oled@3c {
+            compatible = "solomon,ssd1306fb";
+            reg = <0x3c>;
+            width = <128>;
+            height = <64>;
+        };
+        */
+    };
+
+    // --- Adicione esta seção para habilitar a UART0 (para Serial USB/COM) ---
+    &uart0 {
+        status = "okay";
+        compatible = "nordic,nrf-uarte"; // Geralmente é este.
+        current-speed = <115200>;
+        // Você NÃO precisa definir os pinos tx-pin e rx-pin aqui explicitamente na maioria dos casos
+        // para o nice!nano_v2, pois o board.dts já deve fazer isso.
+    };
+};
