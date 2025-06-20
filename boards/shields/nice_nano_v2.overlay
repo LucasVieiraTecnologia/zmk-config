@@ -10,72 +10,71 @@
         status = "okay"; // Habilita o controlador I2C0
 
         // --- Expansor de GPIO I2C (Descomente e ajuste se o seu Sofle usa um) ---
-        // Exemplo para PCF8574 (endereço 0x20) - MUITO COMUM NO SOFLE PARA MATRIZ
         /*
         pcf8574_0: pcf8574@20 {
-            compatible = "nxp,pcf8574"; // Ou "microchip,mcp23017" se for esse chip
-            reg = <0x20>; // Endereço I2C do seu expansor (verifique o datasheet ou esquema)
+            compatible = "nxp,pcf8574";
+            reg = <0x20>;
             gpio-cells = <2>;
             #gpio-cells = <2>;
-            // Se o expansor controla as linhas da matriz e precisa de pull-ups:
-            // gpios = <&pcf8574_0 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
-            //         <&pcf8574_0 1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
-            //         <&pcf8574_0 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
-            //         <&pcf8574_0 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
-            //         <&pcf8574_0 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
-            //         <&pcf8574_0 5 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
-            //         <&pcf8574_0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
-            //         <&pcf8574_0 7 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            //         ;
+            // gpios = <&pcf8574_0 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>, ...
         };
         */
 
         // --- Display OLED (Descomente e ajuste se o seu Sofle tem um no lado esquerdo) ---
-        // Exemplo para SSD1306 (endereço 0x3c)
         /*
         oled: oled@3c {
             compatible = "solomon,ssd1306fb";
-            reg = <0x3c>; // Endereço I2C do seu OLED (geralmente 0x3c ou 0x3d)
+            reg = <0x3c>;
             width = <128>;
             height = <64>;
-            // Se o seu OLED precisa de pinos RST/D/C via I2C, adicione aqui (verifique o esquema do Sofle):
-            // reset-gpios = <&gpio0 10 GPIO_ACTIVE_HIGH>;
-            // data-cmd-gpios = <&gpio0 9 GPIO_ACTIVE_HIGH>;
         };
         */
     };
 
     // --- SEÇÃO CRÍTICA PARA A PORTA COM USB (CDC ACM) ---
-    // Habilita a UART0 no Devicetree e a configura para a porta serial virtual.
-    // Esta é a tentativa mais robusta para resolver o aviso DT_HAS_ZEPHYR_CDC_ACM_UART_ENABLED.
     &uart0 {
-        status = "okay"; // Liga o periférico UART0
-        compatible = "nordic,nrf-uarte"; // Tipo de periférico UART no nRF52840
-        current-speed = <115200>; // Velocidade de comunicação padrão
-
-        // Este nó filho é o que vincula a UART0 à funcionalidade CDC ACM (Serial Virtual)
+        status = "okay";
+        compatible = "nordic,nrf-uarte";
+        current-speed = <115200>;
         cdc_acm_uart: cdc_acm_uart {
             compatible = "zephyr,cdc-acm-uart";
-            // Opcional: Você pode dar um nome mais específico para a porta se quiser.
-            // cdc-acm-port-name = "ZMK_Serial";
         };
-
-        // NOTA: Para o nice!nano v2, os pinos RX/TX da UART0 (P0.06/P0.08)
-        // geralmente são definidos no nice_nano_v2.dts base e não precisam ser
-        // explicitados aqui, a menos que haja um conflito ou você queira mudar.
-        // tx-pin = <6>;
-        // rx-pin = <8>;
     };
 
-    // --- Outras definições específicas do seu teclado que podem ir em um overlay ---
-    // (Ex: encoders, se eles não usarem I2C)
-    /*
-    rotary_encoder_1: rotary_encoder_1 {
+    // --- ENCODERS: DESCOMENTE E AJUSTE ESTA SEÇÃO! ---
+    // Estes são pinos comuns para Sofle. VERIFIQUE SEUS PRÓPRIOS PINOS NO ESQUEMA DO SOFLE E NICE!NANO.
+    left_encoder: encoder_left {
         compatible = "alps,ec11";
-        label = "ENCODER_1";
-        a-gpios = <&gpio0 15 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
-        b-gpios = <&gpio0 16 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
-        resolution = <4>;
+        // PINOS DE ROTAÇÃO A e B do encoder esquerdo. CONFIRME ESTES PINOS!
+        // Exemplo: P0.15 e P0.16 para encoder esquerdo no Sofle
+        a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        steps = <4>; // ou <80> para 20 pulsos/rotação * 4 (resolução do Alps EC11)
+        status = "okay"; // <--- ESSENCIAL: ATIVA O ENCODER ESQUERDO
+        // PINOS DO BOTÃO DO ENCODER ESQUERDO (se tiver um pino dedicado para o botão).
+        // DESCOMENTE E AJUSTE O PINO SE FOR O CASO!
+        // Exemplo: P0.17 para o botão do encoder esquerdo
+        // button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
     };
-    */
+
+    right_encoder: encoder_right {
+        compatible = "alps,ec11";
+        // PINOS DE ROTAÇÃO A e B do encoder direito. CONFIRME ESTES PINOS!
+        // Exemplo: P0.17 e P0.18 para encoder direito no Sofle
+        a-gpios = <&gpio0 17 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        steps = <4>;
+        status = "okay"; // ATIVA O ENCODER DIREITO
+        // PINOS DO BOTÃO DO ENCODER DIREITO. DESCOMENTE E AJUSTE O PINO SE FOR O CASO!
+        // Exemplo: P0.19 para o botão do encoder direito
+        // button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+    };
+
+    // Este nó 'sensors' vincula os encoders ao sistema de sensor ZMK.
+    // É usado pelo 'sensor-bindings' no keymap.
+    sensors {
+        compatible = "zmk,keymap-sensors";
+        sensors = <&left_encoder &right_encoder>;
+        triggers-per-rotation = <4>; // Ajuste para o seu encoder
+    };
 };
