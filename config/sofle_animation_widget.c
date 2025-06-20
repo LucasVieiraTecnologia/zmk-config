@@ -4,9 +4,14 @@
 #include <drivers/display.h>
 #include <lvgl.h>
 #include <zmk/display/widgets/widget.h>
+#include <zmk/events/activity_state_changed.h>
+#include <zmk/events/usb_conn_state_changed.h>
+#include <zmk/event_manager.h>
 
+// Inclua seu arquivo de imagens. Como está na mesma pasta 'config/', basta o nome.
 #include "sofle_oled_animation.h"
 
+// Defina o intervalo entre os quadros da animação em milissegundos
 #define ANIMATION_FRAME_INTERVAL_MS 100
 
 static lv_obj_t *animation_img;
@@ -22,19 +27,18 @@ static void update_animation_frame(struct k_work *work) {
         }
     }
 
+    // ESTRUTURA LVGL COM DIMENSÕES 32x128 (CORRIGIDO!)
     static lv_img_dsc_t animation_img_dsc = {
         .header.always_zero = 0,
-        .header.w = 32,  // Largura CORRIGIDA do seu OLED
-        .header.h = 128, // Altura CORRIGIDA do seu OLED
-        .header.cf = LV_IMG_CF_ALPHA_1BIT,
-        .data_size = 32 * 128 / 8, // Tamanho dos dados em bytes
+        .header.w = 32,  // Largura do seu OLED
+        .header.h = 128, // Altura do seu OLED
+        .header.cf = LV_IMG_CF_ALPHA_1BIT, // Monocromático (1 bit por pixel)
+        .data_size = 32 * 128 / 8, // Tamanho dos dados em bytes = 512 bytes
         .data = NULL,
     };
 
     animation_img_dsc.data = epd_bitmap_allArray[current_frame_idx];
-
     lv_img_set_src(animation_img, &animation_img_dsc);
-
     current_frame_idx = (current_frame_idx + 1) % epd_bitmap_allArray_LEN;
 }
 
@@ -48,7 +52,7 @@ K_TIMER_DEFINE(animation_timer, animation_timer_handler, NULL);
 
 static int zmk_widget_animation_init(struct zmk_widget_widget *widget) {
     animation_img = lv_img_create(zmk_display_get_obj());
-    lv_obj_align(animation_img, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_align(animation_img, LV_ALIGN_CENTER, 0, 0); // Centraliza a animação na tela
 
     k_timer_start(&animation_timer, K_NO_WAIT, K_MSEC(ANIMATION_FRAME_INTERVAL_MS));
 
