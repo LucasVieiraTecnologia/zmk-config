@@ -16,7 +16,7 @@ static const struct device *display_dev;
 static lv_obj_t *zmk_display_screen;
 
 // Esta função será chamada pelo ZMK durante a inicialização do firmware.
-int zmk_display_init() {
+int zmk_display_custom_init() {
     LOG_DBG("Inicializando display ZMK personalizado para Sofle");
 
     display_dev = DEVICE_DT_GET(DT_CHOSEN(zmk_display));
