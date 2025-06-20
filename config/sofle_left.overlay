@@ -1,0 +1,25 @@
+/ {
+    chosen {
+        zmk,display = &oled;
+    };
+
+    &i2c0 {
+        status = "okay";
+
+        oled: oled@3c {
+            compatible = "solomon,sh1106fb"; // Se o seu for SSD1306, mude para "solomon,ssd1306fb"
+            reg = <0x3c>;
+            width = <128>;
+            height = <32>;
+            segment-offset = <0>;
+            page-offset = <0>;
+            display-offset = <0>;
+            multiplex-ratio = <31>;
+            com-pm = <0x12>;
+            segment-remap;
+            com-invdir;
+            read-modify-write;
+            prechargep = <0x22>;
+        };
+    };
+};
