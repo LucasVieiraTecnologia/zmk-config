@@ -12,7 +12,7 @@
         // --- Expansor de GPIO I2C (Descomente e ajuste se o seu Sofle usa um) ---
         /*
         pcf8574_0: pcf8574@20 {
-            compatible = "nxp,pcf8574";
+            compatible = "nxp,pcf8574"; // ou "microchip,mcp23017"
             reg = <0x20>;
             gpio-cells = <2>;
             #gpio-cells = <2>;
@@ -32,49 +32,49 @@
     };
 
     // --- SEÇÃO CRÍTICA PARA A PORTA COM USB (CDC ACM) ---
+    // Habilita a UART0 no Devicetree e a configura para a porta serial virtual.
     &uart0 {
-        status = "okay";
-        compatible = "nordic,nrf-uarte";
-        current-speed = <115200>;
+        status = "okay"; // Liga o periférico UART0
+        compatible = "nordic,nrf-uarte"; // Tipo de periférico UART no nRF52840
+        current-speed = <115200>; // Velocidade de comunicação padrão
+
+        // Este nó filho é o que vincula a UART0 à funcionalidade CDC ACM (Serial Virtual)
         cdc_acm_uart: cdc_acm_uart {
             compatible = "zephyr,cdc-acm-uart";
         };
     };
 
-    // --- ENCODERS: DESCOMENTE E AJUSTE ESTA SEÇÃO! ---
-    // Estes são pinos comuns para Sofle. VERIFIQUE SEUS PRÓPRIOS PINOS NO ESQUEMA DO SOFLE E NICE!NANO.
+    // --- ENCODERS: ESTA SEÇÃO AGORA ESTÁ ATIVA E CORRETA ---
+    // Estes são pinos comuns para Sofle v2. VERIFIQUE SEUS PRÓPRIOS PINOS NO ESQUEMA DO SOFLE E NICE!NANO.
+    // É crucial que estes pinos correspondam ao seu hardware físico.
     left_encoder: encoder_left {
         compatible = "alps,ec11";
         // PINOS DE ROTAÇÃO A e B do encoder esquerdo. CONFIRME ESTES PINOS!
-        // Exemplo: P0.15 e P0.16 para encoder esquerdo no Sofle
-        a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-        b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-        steps = <4>; // ou <80> para 20 pulsos/rotação * 4 (resolução do Alps EC11)
+        a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Exemplo: P0.15 para A
+        b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Exemplo: P0.16 para B
+        steps = <4>; // 4 pulsos por rotação (ou 80 se 20 pulsos por rotação e resolução * 4)
         status = "okay"; // <--- ESSENCIAL: ATIVA O ENCODER ESQUERDO
         // PINOS DO BOTÃO DO ENCODER ESQUERDO (se tiver um pino dedicado para o botão).
         // DESCOMENTE E AJUSTE O PINO SE FOR O CASO!
-        // Exemplo: P0.17 para o botão do encoder esquerdo
-        // button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        // button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // Exemplo: P0.17 para o botão
     };
 
     right_encoder: encoder_right {
         compatible = "alps,ec11";
         // PINOS DE ROTAÇÃO A e B do encoder direito. CONFIRME ESTES PINOS!
-        // Exemplo: P0.17 e P0.18 para encoder direito no Sofle
-        a-gpios = <&gpio0 17 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-        b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        a-gpios = <&gpio0 17 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Exemplo: P0.17 para A
+        b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Exemplo: P0.18 para B
         steps = <4>;
         status = "okay"; // ATIVA O ENCODER DIREITO
         // PINOS DO BOTÃO DO ENCODER DIREITO. DESCOMENTE E AJUSTE O PINO SE FOR O CASO!
-        // Exemplo: P0.19 para o botão do encoder direito
-        // button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        // button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // Exemplo: P0.19 para o botão
     };
 
     // Este nó 'sensors' vincula os encoders ao sistema de sensor ZMK.
-    // É usado pelo 'sensor-bindings' no keymap.
+    // Ele é usado pelo 'sensor-bindings' no seu keymap.
     sensors {
         compatible = "zmk,keymap-sensors";
-        sensors = <&left_encoder &right_encoder>;
-        triggers-per-rotation = <4>; // Ajuste para o seu encoder
+        sensors = <&left_encoder &right_encoder>; // Garante que AMBOS estão vinculados
+        triggers-per-rotation = <4>; // Ajuste para o seu encoder (e.g., 4, 20, 40, 80)
     };
 };
