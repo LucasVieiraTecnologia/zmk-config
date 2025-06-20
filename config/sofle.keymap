@@ -39,7 +39,7 @@
 //             | GUI | ALT  | CTRL | LOWER|  ENTER |  | SPACE | RAISE| CTRL  | ALT    | GUI  |
             bindings = <
 &kp GRAVE &kp N1 &kp N2   &kp N3   &kp N4    &kp N5                             &kp N6 &kp N7    &kp N8    &kp N9   &kp N0   &none
-&kp ESC   &kp Q  &kp W    &kp E    &kp R     &kp T                              &kp Y  &kp U     &kp I     &kp I     &kp I    &kp BSPC
+&studio_unlock &kp Q  &kp W    &kp E    &kp R     &kp T                              &kp Y  &kp U     &kp I     &kp O    &kp P    &kp BSPC
 &kp TAB   &kp A  &kp S    &kp D    &kp F     &kp G                              &kp H  &kp J     &kp K     &kp L    &kp SEMI &kp SQT
 &kp LSHFT &kp Z  &kp X    &kp C    &kp V     &kp B       &kp C_MUTE &none       &kp N  &kp M     &kp COMMA &kp DOT  &kp FSLH &kp RSHFT
                           &kp LGUI &kp LALT &kp LCTRL &mo LOWER  &kp RET    &kp SPACE  &mo RAISE  &kp RCTRL &kp RALT  &kp RGUI
@@ -80,7 +80,7 @@
 &bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4                          &trans    &trans    &trans   &trans    &trans &trans
 &trans     &kp INS      &kp PSCRN    &kp K_CMENU  &trans       &trans                             &kp PG_UP &trans    &kp UP   &trans    &kp N0 &trans
 &trans     &kp LALT     &kp LCTRL    &kp LSHFT    &trans       &kp CLCK                           &kp PG_DN &kp LEFT  &kp DOWN &kp RIGHT &kp DEL &kp BSPC
-&trans     &kp K_UNDO   &kp K_CUT    &kp K_COPY   &kp K_PASTE  &trans        &trans &trans       &trans    &trans    &trans   &trans    &trans &trans
+&trans     &kp K_UNDO   &kp CUT    &kp COPY   &kp PASTE  &trans        &trans &trans       &trans    &trans    &trans   &trans    &trans &trans
                            &trans       &trans       &trans       &trans        &trans &trans      &trans    &trans    &trans   &trans
             >;
 
@@ -88,12 +88,6 @@
         };
 
         adjust_layer {
-// ----------------------------------------------------------------------------------------------------------------------------
-// | BTCLR  |  BT1    |  BT2    |    BT3   |    BT4   |    BT5   |                   |      |      |        |      |       |        |
-// | EXTPWR | RGB_HUD | RGB_HUI | RGB_SAD | RGB_SAI | RGB_EFF |                   |      |      |        |      |       |        |
-// |        | RGB_BRD | RGB_BRI |          |          |          |                   |      |      |        |      |       |        |
-// |        |         |         |          |          |          | RGB_TOG | |      |      |      |        |      |       |        |
-//                      |          |          |          |          |                   |      |      |        |      |
             display-name = "adjust";
             bindings = <
 &bt BT_CLR        &bt BT_SEL 0    &bt BT_SEL 1    &bt BT_SEL 2    &bt BT_SEL 3    &bt BT_SEL 4                               &none &none &none &none &none &none
@@ -105,28 +99,28 @@
         };
 
     }; // Fim do keymap
-    
+
     // --- SEÇÃO PARA COMBOS ---
     // Você pode ter múltiplos combos aqui.
     combos {
         compatible = "zmk,combos";
-        
+
         // Combo para desbloqueio do ZMK Studio (se necessário)
+        // Agora ativado pela tecla ESC (posição 6) para testar
         studio_unlock_combo: studio_unlock_combo { // Adicione um label para o combo
             bindings = <&studio_unlock>;
-            // EX: Posição 0 (Grave) e Posição 1 (tecla 1)
-            // Se quiser usar ESC (pos. 6) e Q (pos. 7): key-positions = <6 7>;
-            key-positions = <0 1>; 
+            key-positions = <6>; // Tecla ESC
             #binding-cells = <0>;
             layers = <0>; // Combo ativo na camada BASE (default)
         };
 
         // Combo para desbloquear o Studio E mutar com o clique do knob
+        // Este combo irá funcionar com o knob DIREITO se ele estiver na posição 42.
         studio_unlock_and_mute_combo: studio_unlock_and_mute_combo { // Adicione um label para o combo
-            key-positions = <42>; // VERIFIQUE ESTA POSIÇÃO! (Assumindo que 42 é o botão do knob/C_MUTE)
-            bindings = <&studio_unlock &kp C_MUTE>; // Executa ambos em sequência
+            key-positions = <42>; // Provavelmente o botão do knob DIREITO
+            bindings = <&studio_unlock &kp C_MUTE>;
             #binding-cells = <0>;
-            layers = <0>; // Combo ativo na camada BASE (default)
+            layers = <0>;
         };
     };
-}; // Esta chave final fecha o nó raiz '/' - NÃO REMOVA!
+}; // Esta chave final fecha o nó raiz '/'
