@@ -1,6 +1,3 @@
-// Custom overlay for the sofle_left shield in zmk-config.
-// This overlays the default sofle_left.overlay from ZMK.
-
 / {
     chosen {
         zmk,display = &oled;
@@ -9,31 +6,20 @@
     &i2c0 {
         status = "okay";
 
-        // OLED configuration for Sofle V2
-        // Most Sofle V2 use SH1106 at address 0x3C
         oled: oled@3c {
-            compatible = "solomon,sh1106fb"; // <-- MOST LIKELY THIS. If still blank, try "solomon,ssd1306fb"
-            reg = <0x3c>;                   // <-- Common I2C address. If still blank, try 0x3D
+            compatible = "solomon,sh1106fb";
+            reg = <0x3c>;
             width = <128>;
             height = <32>;
-
-            // Common properties for SH1106/SSD1306 displays (uncomment if display shows nothing or garbage)
-            // If the image is mirrored horizontally, try commenting out 'segment-remap;'
-            // If the image is upside down or inverted vertically, try commenting out 'com-invdir;' or adding 'scan-invdir;'
             segment-offset = <0>;
             page-offset = <0>;
             display-offset = <0>;
-            multiplex-ratio = <31>; // (height - 1)
+            multiplex-ratio = <31>;
             com-pm = <0x12>;
             segment-remap;
             com-invdir;
             read-modify-write;
             prechargep = <0x22>;
-            // scan-invdir; // Add this if com-invdir is not enough for vertical inversion
         };
     };
-
-    // If you had other Devicetree modifications (e.g., specific encoder button pins, wired split pins),
-    // you would add them here within their respective nodes (e.g., &left_encoder { ... }; &wired_split { ... };)
-    // For now, let's focus on getting the OLED to parse correctly.
 };
