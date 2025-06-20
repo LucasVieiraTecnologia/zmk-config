@@ -24,7 +24,17 @@ include:
     shield: sofle_left
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
+    # ADICIONE ESTAS DUAS LINHAS para incluir seus arquivos customizados.
+    # A indentação aqui é CRÍTICA.
+    sources:
+      - display_manager.c
+      - sofle_animation_widget.c # Garanta que este também esteja aqui!
+
   - board: nice_nano_v2
     shield: sofle_right
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
+    # Repita para o lado direito se quiser a animação em ambos os OLEDs
+    sources:
+      - display_manager.c
+      - sofle_animation_widget.c
