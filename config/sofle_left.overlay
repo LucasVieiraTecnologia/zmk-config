@@ -1,0 +1,50 @@
+// Overlay personalizado para o shield Sofle_left
+// Este arquivo sobrescreve/estende o zmk/app/boards/shields/sofle/sofle_left.overlay
+
+/ {
+    chosen {
+        // ESSENCIAL: Habilita o display para ser 'chosen' pelo ZMK
+        zmk,display = &oled;
+    };
+
+    &i2c0 { // Use o nó I2C correto para o seu teclado
+        status = "okay"; // Certifica que o I2C está habilitado no overlay principal
+
+        oled: oled@3c { // O nome "oled" é uma boa prática e é referenciado em "zmk,display = &oled;"
+            // ATENÇÃO AQUI: Confirme o driver e a altura do seu OLED.
+            // SH1106 é o mais comum para Sofle V2.
+            compatible = "solomon,sh1106fb"; // <-- MUITO PROVAVELMENTE É ESTE! OU ssd1306fb
+            reg = <0x3c>; // <-- Endereço I2C do seu OLED (0x3C ou 0x3D são os mais comuns)
+            width = <128>;
+            height = <32>; // <-- O Sofle V2 geralmente usa 128x32. Confirme o seu!
+
+            // Propriedades Adicionais Comuns para SH1106 / SSD1306
+            // Descomente e ajuste conforme necessário para o seu display funcionar corretamente
+            // (Se a imagem estiver invertida, espelhada, ou não aparecer)
+            segment-offset = <0>;
+            page-offset = <0>;
+            display-offset = <0>;
+            multiplex-ratio = <31>; // (height - 1)
+            com-pm = <0x12>;      // Valor comum, pode variar
+            // A linha segment-remap inverte os segmentos (colunas)
+            segment-remap;        // Comente esta linha SE a imagem estiver espelhada horizontalmente
+            // A linha com-invdir inverte o COM (linhas)
+            com-invdir;           // Comente esta linha SE a imagem estiver de cabeça para baixo
+            read-modify-write;
+            prechargep = <0x22>;  // Valor comum, pode variar
+            // scan-invdir;       // Se a imagem estiver invertida verticalmente (pixel a pixel), tente adicionar
+        };
+    };
+
+    // Adicione aqui outros ajustes de hardware que você possa ter feito no overlay original,
+    // por exemplo, para encoders ou pinos de split, se eles não estiverem funcionando corretamente.
+    // Se a seção 'chosen' do split wired no build.yaml for o problema, você pode adicionar a definição
+    // do 'wired-split' aqui:
+    /*
+    wired-split {
+        compatible = "zmk,wired-split";
+        uart-rx-pin = <&gpio0 5>; // Pinos reais do seu teclado para o split wired
+        uart-tx-pin = <&gpio0 6>; // CONFIRME OS PINOS DO SEU SOFLE V2
+    };
+    */
+};s
