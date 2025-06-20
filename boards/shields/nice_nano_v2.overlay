@@ -44,31 +44,34 @@
         };
     };
 
-    // --- ENCODERS: ESTA SEÇÃO AGORA ESTÁ ATIVA E CORRETA ---
-    // Estes são pinos comuns para Sofle v2. VERIFIQUE SEUS PRÓPRIOS PINOS NO ESQUEMA DO SOFLE E NICE!NANO.
-    // É crucial que estes pinos correspondam ao seu hardware físico.
+    // --- ENCODERS: AGORA COM BOTÕES HABILITADOS ---
+    // ESTES SÃO PINOS DE EXEMPLO. VOCÊ DEVE SUBSTITUÍ-LOS COM OS PINOS REAIS DO SEU HARDWARE.
     left_encoder: encoder_left {
-    compatible = "alps,ec11";
-    a-gpios = <&gpio0 X (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // SEU PINO A REAL DO ENCODER ESQUERDO
-    b-gpios = <&gpio0 Y (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // SEU PINO B REAL DO ENCODER ESQUERDO
-    steps = <4>; // ou <80> se 20 pulsos/rotação * 4
-    status = "okay";
-    // button-gpios = <&gpio0 Z (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // SEU PINO DO BOTÃO ESQUERDO REAL (SE DEDICADO)
-};
+        compatible = "alps,ec11";
+        // PINOS DE ROTAÇÃO A e B do encoder esquerdo. CONFIRME ESTES PINOS!
+        a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // PINO A DE EXEMPLO PARA ENCODER ESQUERDO
+        b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // PINO B DE EXEMPLO PARA ENCODER ESQUERDO
+        steps = <4>; // ou <80>
+        status = "okay";
+        // PINO DO BOTÃO DO ENCODER ESQUERDO. DESCOMENTADO COM PINO DE EXEMPLO.
+        button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // PINO DE EXEMPLO PARA BOTÃO DO ENCODER ESQUERDO
+    };
 
-right_encoder: encoder_right {
-    compatible = "alps,ec11";
-    a-gpios = <&gpio0 A (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // SEU PINO A REAL DO ENCODER DIREITO
-    b-gpios = <&gpio0 B (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // SEU PINO B REAL DO ENCODER DIREITO
-    steps = <4>;
-    status = "okay";
-    // button-gpios = <&gpio0 C (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // SEU PINO DO BOTÃO DIREITO REAL (SE DEDICADO)
-};
+    right_encoder: encoder_right {
+        compatible = "alps,ec11";
+        // PINOS DE ROTAÇÃO A e B do encoder direito. CONFIRME ESTES PINOS!
+        a-gpios = <&gpio0 17 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // PINO A DE EXEMPLO PARA ENCODER DIREITO
+        b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // PINO B DE EXEMPLO PARA ENCODER DIREITO
+        steps = <4>;
+        status = "okay";
+        // PINO DO BOTÃO DO ENCODER DIREITO. DESCOMENTADO COM PINO DE EXEMPLO.
+        button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // PINO DE EXEMPLO PARA BOTÃO DO ENCODER DIREITO
+    };
+
     // Este nó 'sensors' vincula os encoders ao sistema de sensor ZMK.
-    // Ele é usado pelo 'sensor-bindings' no seu keymap.
     sensors {
         compatible = "zmk,keymap-sensors";
         sensors = <&left_encoder &right_encoder>; // Garante que AMBOS estão vinculados
-        triggers-per-rotation = <4>; // Ajuste para o seu encoder (e.g., 4, 20, 40, 80)
+        triggers-per-rotation = <4>; // Ajuste para o seu encoder
     };
 };
