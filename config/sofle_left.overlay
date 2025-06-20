@@ -1,51 +1,39 @@
-// Overlay personalizado para o shield Sofle_left
-// Este arquivo sobrescreve/estende o zmk/app/boards/shields/sofle/sofle_left.overlay
+// Custom overlay for the sofle_left shield in zmk-config.
+// This overlays the default sofle_left.overlay from ZMK.
 
 / {
     chosen {
-        // ESSENCIAL: Habilita o display para ser 'chosen' pelo ZMK
         zmk,display = &oled;
     };
 
-    &i2c0 { // Use o nó I2C correto para o seu teclado (i2c0 é comum para nice_nano_v2)
-        status = "okay"; // Garante que o controlador I2C está habilitado
+    &i2c0 {
+        status = "okay";
 
-        oled: oled@3c { // O nome "oled" é uma boa prática
-            // ATENÇÃO: Confirme o driver e o endereço I2C do seu OLED.
-            // SH1106 é o mais comum para Sofle V2.
-            compatible = "solomon,sh1106fb"; // <-- MUITO PROVAVELMENTE É ESTE! Se for SSD1306, mude para "solomon,ssd1306fb"
-            reg = <0x3c>; // <-- Endereço I2C do seu OLED (0x3C ou 0x3D são os mais comuns)
+        // OLED configuration for Sofle V2
+        // Most Sofle V2 use SH1106 at address 0x3C
+        oled: oled@3c {
+            compatible = "solomon,sh1106fb"; // <-- MOST LIKELY THIS. If still blank, try "solomon,ssd1306fb"
+            reg = <0x3c>;                   // <-- Common I2C address. If still blank, try 0x3D
             width = <128>;
-            height = <32>; // <-- O Sofle V2 geralmente usa 128x32.
+            height = <32>;
 
-            // Propriedades Adicionais Comuns para SH1106 (descomente e ajuste se necessário)
-            // Se o display não ligar ou aparecer estranho, estas são as primeiras a verificar.
-            // segment-offset = <0>;
-            // page-offset = <0>;
-            // display-offset = <0>;
-            // multiplex-ratio = <31>; // (height - 1)
-            // com-pm = <0x12>;
-            // segment-remap;        // Comente se a imagem estiver espelhada horizontalmente
-            // com-invdir;           // Comente se a imagem estiver de cabeça para baixo
-            // read-modify-write;
-            // prechargep = <0x22>;
-            // scan-invdir;          // Tente adicionar se o com-invdir não funcionar para inverter verticalmente
+            // Common properties for SH1106/SSD1306 displays (uncomment if display shows nothing or garbage)
+            // If the image is mirrored horizontally, try commenting out 'segment-remap;'
+            // If the image is upside down or inverted vertically, try commenting out 'com-invdir;' or adding 'scan-invdir;'
+            segment-offset = <0>;
+            page-offset = <0>;
+            display-offset = <0>;
+            multiplex-ratio = <31>; // (height - 1)
+            com-pm = <0x12>;
+            segment-remap;
+            com-invdir;
+            read-modify-write;
+            prechargep = <0x22>;
+            // scan-invdir; // Add this if com-invdir is not enough for vertical inversion
         };
     };
 
-    // Seção para o split com fio (UART).
-    // Se você não usa split com fio, pode ignorar esta seção ou comentá-la.
-    // Se usa, DESCOMENTE e ajuste os pinos para o seu hardware REAL.
-    /*
-    wired_split: wired-split {
-        compatible = "zmk,wired-split";
-        uart-rx-pin = <&gpio0 5>; // Pinos de RX para o split UART
-        uart-tx-pin = <&gpio0 6>; // Pinos de TX para o split UART
-        // Se você tiver um pino de detecção para o lado (master/slave), adicione:
-        // sense-pin = <&gpio0 7>; // Pino de detecção para master/slave (opcional)
-    };
-    */
-
-    // Adicione aqui outros nós Devicetree se você tiver configurado botões de encoder extras ou outras coisas.
-    // Seus encoders já são definidos no sofle.dtsi, e o override do nice_nano_v2.overlay já funciona para eles.
+    // If you had other Devicetree modifications (e.g., specific encoder button pins, wired split pins),
+    // you would add them here within their respective nodes (e.g., &left_encoder { ... }; &wired_split { ... };)
+    // For now, let's focus on getting the OLED to parse correctly.
 };
