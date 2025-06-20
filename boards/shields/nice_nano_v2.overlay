@@ -46,16 +46,14 @@
 
     // --- ENCODERS: AGORA COM BOTÕES HABILITADOS ---
     // ESTES SÃO PINOS DE EXEMPLO. VOCÊ DEVE SUBSTITUÍ-LOS COM OS PINOS REAIS DO SEU HARDWARE.
-    left_encoder: encoder_left {
-        compatible = "alps,ec11";
-        // PINOS DE ROTAÇÃO A e B do encoder esquerdo. CONFIRME ESTES PINOS!
-        a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // PINO A DE EXEMPLO PARA ENCODER ESQUERDO
-        b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // PINO B DE EXEMPLO PARA ENCODER ESQUERDO
-        steps = <4>; // ou <80>
-        status = "okay";
-        // PINO DO BOTÃO DO ENCODER ESQUERDO. DESCOMENTADO COM PINO DE EXEMPLO.
-        button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // PINO DE EXEMPLO PARA BOTÃO DO ENCODER ESQUERDO
-    };
+left_encoder: encoder_left {
+    compatible = "alps,ec11";
+    a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Seus pinos de rotação
+    b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+    steps = <4>;
+    status = "okay";
+    button-gpios = <&gpio0 20 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // <--- AJUSTE AQUI PARA O PINO REAL DO SEU SOFLE
+};
 
     right_encoder: encoder_right {
         compatible = "alps,ec11";
