@@ -48,11 +48,11 @@
     // ESTES SÃO PINOS DE EXEMPLO. VOCÊ DEVE SUBSTITUÍ-LOS COM OS PINOS REAIS DO SEU HARDWARE.
 left_encoder: encoder_left {
     compatible = "alps,ec11";
-    a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Seus pinos de rotação
+    a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Seus pinos A e B
     b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
     steps = <4>;
     status = "okay";
-    button-gpios = <&gpio0 20 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // <--- AJUSTE AQUI PARA O PINO REAL DO SEU SOFLE
+    // button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // <--- COMENTE ESTA LINHA!
 };
 
     right_encoder: encoder_right {
