@@ -1,11 +1,12 @@
 manifest:
   remotes:
-    - name: urob
-      url-base: https://github.com/urob
+    - name: end3r
+      url-base: https://github.com/end3r
   projects:
     - name: zmk
-      remote: urob
-      revision: experiments/lvgl
+      remote: end3r
+      revision: display-widget-support
       import: app/west.yml
   self:
     path: config
+
