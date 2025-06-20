@@ -1,0 +1,35 @@
+# Kconfig for the sofle shield.
+# Add definitions for symbols that are missing when building.
+
+# Certifica que os símbolos ZMK_DISPLAY_STATUS e ZMK_ACTIVITY são definidos
+config ZMK_DISPLAY_STATUS
+    bool "Enable ZMK Display Status"
+    depends on ZMK_DISPLAY
+    default y
+
+config ZMK_ACTIVITY
+    bool "Enable ZMK Activity Monitoring"
+    default y
+
+# Define os símbolos de nível de log (como booleanos para Kconfig)
+choice
+    prompt "ZMK Log Level"
+    # depends on ZMK_LOG_LEVEL_CHOICE # Pode precisar adicionar se der erro
+    config ZMK_LOG_LEVEL_DBG
+        bool "Debug"
+    endchoice
+
+config ZMK_DISPLAY_LOG_LEVEL_DBG
+    bool "Debug Display Log Level"
+    depends on ZMK_DISPLAY
+    depends on ZMK_LOG_LEVEL_DBG
+    default y
+
+config ZMK_ACTIVITY_LOG_LEVEL_DBG
+    bool "Debug Activity Log Level"
+    depends on ZMK_ACTIVITY
+    depends on ZMK_LOG_LEVEL_DBG
+    default y
+
+# Pode ser que você precise de um 'source "Kconfig.zephyr"' no topo se Kconfig não conseguir encontrar símbolos básicos
+# source "Kconfig.zephyr"
