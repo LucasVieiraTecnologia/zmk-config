@@ -5,7 +5,7 @@
 #include <zmk/events/activity_state_changed.h> // Para o evento de mudança de estado de atividade
 
 // Inclua o arquivo com os seus dados de frames do GIF
-#include "gif_frames.h"
+#include "gif_frames.h" // <--- Este include é crucial!
 
 // Define a taxa de atualização do GIF em milissegundos (ex: 150ms = ~6.6 FPS)
 #define GIF_UPDATE_INTERVAL_MS 150
@@ -57,6 +57,7 @@ void gif_animation_timer_handler(struct k_timer *timer_id) {
         // Opcional: Se você tiver um "widget" de status padrão (tipo layer/bateria)
         // você pode tentar reativá-lo aqui.
         // zmk_display_enable_widgets(true);
+        // LOG_DBG("Keyboard ACTIVE, clearing GIF display."); // Isso pode ser muito log
     }
 }
 
@@ -88,7 +89,6 @@ static int activity_state_listener(const zmk_event_t *eh) {
 // Registra o listener de evento para as mudanças de estado de atividade
 ZMK_LISTENER(activity_state_listener, activity_state_listener);
 ZMK_SUBSCRIPTION(activity_state_listener, zmk_activity_state_changed);
-
 
 // Função de inicialização do módulo, chamada durante a inicialização do ZMK
 static int init_gif_display(void) {
