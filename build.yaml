@@ -23,11 +23,11 @@ include:
     shield: sofle_left
     # ADICIONE ESTAS DUAS LINHAS PARA O SNIPPET DO ZMK STUDIO
     snippet: studio-rpc-usb-uart
-    # ADICIONE A OPÇÃO EXTRA_KCONFIG_SOURCES AQUI:
-    cmake-args: -DCONFIG_ZMK_STUDIO=y -DEXTRA_KCONFIG_SOURCES=../config/Kconfig
+    # REMOVA A OPÇÃO EXTRA_KCONFIG_SOURCES DAQUI!
+    cmake-args: -DCONFIG_ZMK_STUDIO=y
   - board: nice_nano_v2
     shield: sofle_right
     # ADICIONE ESTAS DUAS LINHAS TAMBÉM PARA O LADO DIREITO
     snippet: studio-rpc-usb-uart
-    # Opcional: Adicione também para o lado direito se precisar das mesmas configurações de log/display
-    cmake-args: -DCONFIG_ZMK_STUDIO=y -DEXTRA_KCONFIG_SOURCES=../config/Kconfig
+    # REMOVA A OPÇÃO EXTRA_KCONFIG_SOURCES DAQUI!
+    cmake-args: -DCONFIG_ZMK_STUDIO=y
