@@ -1,0 +1,44 @@
+# Kconfig para o seu keymap Sofle personalizado
+
+# Inclui o Kconfig básico do Zephyr (importante para o contexto)
+source "Kconfig.zephyr"
+
+# Garante que o status do display e a atividade sejam definidos e disponíveis para o seu build
+config ZMK_DISPLAY_STATUS
+    bool "Habilitar Status do Display ZMK"
+    default y
+    depends on ZMK_DISPLAY # Depende de ZMK_DISPLAY estar habilitado no .conf
+
+config ZMK_ACTIVITY
+    bool "Habilitar Monitoramento de Atividade ZMK"
+    default y
+
+# Define os níveis de log para exibição e atividade
+# ZMK_LOG_LEVEL_DBG é um símbolo de 'escolha', então ele precisa dessa estrutura.
+choice
+    prompt "Nível de Log ZMK"
+    # depends on ZMK_LOG_LEVEL_CHOICE # Descomente apenas se buildar e der um erro relacionado a essa dependência
+                                      # Caso contrário, o 'default y' dentro da escolha deve ser suficiente
+    config ZMK_LOG_LEVEL_DBG
+        bool "Depuração"
+        # Definir 'default y' para ZMK_LOG_LEVEL_DBG dentro de uma escolha
+        # significa que ele será a opção selecionada para o Nível de Log ZMK.
+    endchoice
+
+config ZMK_DISPLAY_LOG_LEVEL_DBG
+    bool "Nível de Log de Depuração do Display"
+    default y
+    depends on ZMK_DISPLAY # Depende de ZMK_DISPLAY estar habilitado
+    depends on ZMK_LOG_LEVEL_DBG # Depende do nível geral de log de depuração estar habilitado
+
+config ZMK_ACTIVITY_LOG_LEVEL_DBG
+    bool "Nível de Log de Depuração da Atividade"
+    default y
+    depends on ZMK_ACTIVITY # Depende de ZMK_ACTIVITY estar habilitado
+    depends on ZMK_LOG_LEVEL_DBG # Depende do nível geral de log de depuração estar habilitado
+
+# Se DISPLAY_BUFFER_SIZE também estiver causando um aviso de indefinido, adicione-o aqui:
+# config DISPLAY_BUFFER_SIZE
+#     int "Tamanho do Buffer do Display em Bytes"
+#     default 512
+#     depends on ZMK_DISPLAY
