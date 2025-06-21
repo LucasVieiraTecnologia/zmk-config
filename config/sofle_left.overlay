@@ -31,7 +31,7 @@ left_encoder: encoder_left {
     b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
     steps = <4>;
     status = "okay";
-    // button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // botão no encoder esquerdo, se tiver
+    // button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // botão no encoder esquerdo, se houver
 };
 
 right_encoder: encoder_right {
@@ -40,7 +40,7 @@ right_encoder: encoder_right {
     b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
     steps = <4>;
     status = "okay";
-    button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // botão no encoder direito, se tiver
+    button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // botão no encoder direito, se houver
 };
 
 sensors {
