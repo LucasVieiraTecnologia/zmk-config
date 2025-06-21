@@ -1,48 +1,52 @@
+// Este é o arquivo para a metade direita do seu teclado Sofle.
+// Salve-o como sofle_right.overlay
+
 / {
+    // Define o display OLED específico para a metade direita.
     chosen {
-        // Define que este display é o principal para a metade direita
         zmk,display = &my_oled_right;
     };
-};
+}; // Fim do bloco principal '/'
 
-&i2c0 { // Habilita o controlador I2C0
-    status = "okay";
+&i2c0 { // Habilita o controlador I2C0, necessário para o OLED.
+    status = "okay"; // Garante que o I2C0 está ativo.
 
-    // Definição do OLED para a metade direita
+    // Definição do OLED da metade direita.
+    // 'my_oled_right' é o label que você usou acima no 'chosen'.
     my_oled_right: oled@3c {
-        compatible = "solomon,ssd1306fb";
-        reg = <0x3c>;
-        width = <128>;
-        height = <32>;
-    };
-};
+        compatible = "solomon,ssd1306fb"; // Tipo de controlador do OLED.
+        reg = <0x3c>; // Endereço I2C do seu OLED (o mais comum).
+        width = <128>; // Largura do display em pixels.
+        height = <32>; // Altura do display em pixels.
+    }; // Fim da definição do OLED.
+}; // Fim do bloco '&i2c0'.
 
-// Configuração UART para comunicação USB (comum na metade direita)
+// Configuração para a porta serial (UART), geralmente usada para a comunicação USB.
+// Esta parte é típica da metade "mestra" ou principal.
 &uart0 {
-    status = "okay";
-    compatible = "nordic,nrf-uarte";
-    current-speed = <115200>;
+    status = "okay"; // Habilita a UART0.
+    compatible = "nordic,nrf-uarte"; // Compatibilidade com a UART do seu chip (Nice!Nano v2).
+    current-speed = <115200>; // Velocidade da comunicação.
 
+    // Definição do dispositivo CDC ACM UART, essencial para a comunicação serial via USB.
     cdc_acm_uart: cdc_acm_uart {
         compatible = "zephyr,cdc-acm-uart";
     };
-};
+}; // Fim do bloco '&uart0'.
 
-// Definição do encoder ROTATIVO da direita
-// AJUSTE ESTES PINOS (GPIO0 15, 16, 17) DE ACORDO COM A SUA FIAÇÃO FÍSICA!
+// Definição do encoder rotativo da direita.
+// ATENÇÃO: Verifique e ajuste os pinos GPIO (15, 16, 17) para corresponderem EXATAMENTE à sua fiação física.
 right_encoder: encoder_right {
-    compatible = "alps,ec11";
-    a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-    b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-    steps = <4>;
-    status = "okay";
-    // Botão do encoder da direita (pino 17, se for o caso)
+    compatible = "alps,ec11"; // Compatibilidade do tipo de encoder.
+    a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Pino da fase A.
+    b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Pino da fase B.
+    steps = <4>; // Número de passos por rotação completa do encoder.
+    status = "okay"; // Habilita o encoder.
+    // Pino para o botão do encoder da direita (se o seu encoder tiver um botão).
     button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-};
+}; // Fim da definição do encoder da direita.
 
-// Define os sensores (encoders) usados no keymap
+// Configuração dos sensores que serão usados pelo ZMK (neste caso, o encoder).
 sensors {
     compatible = "zmk,keymap-sensors";
-    sensors = <&right_encoder>; // Apenas o encoder que está NESTA metade
-    triggers-per-rotation = <4>;
-};
+    sensors = <&right_encoder>; // Inclui o encoder da
