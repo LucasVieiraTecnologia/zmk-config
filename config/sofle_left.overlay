@@ -1,16 +1,41 @@
 / {
     chosen {
-        zmk,display = &oled;
+        zmk,display = &my_oled;
     };
 };
 
 &i2c0 {
     status = "okay";
 
-    oled: oled@3c {
+    my_oled: oled@3c {
         compatible = "solomon,ssd1306fb";
         reg = <0x3c>;
-        width = <32>;
-        height = <128>;
+        width = <128>;
+        height = <32>;
     };
 };
+
+&uart0 {
+    status = "okay";
+    compatible = "nordic,nrf-uarte";
+    current-speed = <115200>;
+
+    cdc_acm_uart: cdc_acm_uart {
+        compatible = "zephyr,cdc-acm-uart";
+    };
+};
+
+left_encoder: encoder_left {
+    compatible = "alps,ec11";
+    a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+    b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+    steps = <4>;
+    status = "okay";
+    // button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // se tiver botão no encoder esquerdo
+};
+
+right_encoder: encoder_right {
+    compatible = "alps,ec11";
+    a-gpios = <&gpio0 17 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+    b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+    steps = <4>;
