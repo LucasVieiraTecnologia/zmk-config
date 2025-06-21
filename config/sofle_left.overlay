@@ -1,21 +1,33 @@
-// No chosen node for display if display is on right half
-// No UART for CDC ACM if on right half
-
-// The encoder physically on the left side
-left_encoder: encoder_left {
-    compatible = "alps,ec11";
-    // Adjust these GPIO pins based on your physical wiring for the LEFT encoder
-    a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Example, use your actual pins
-    b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Example, use your actual pins
-    steps = <4>;
-    status = "okay";
-    // Adjust this GPIO pin based on your physical wiring for the LEFT encoder button
-    button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // Example, use your actual pins
+/ {
+    chosen {
+        zmk,display = &my_oled_left; // Dê um nome diferente para o OLED da esquerda
+    };
 };
 
-// If you only have one encoder on this half, only list that one here.
+&i2c0 { // Certifique-se de que a metade esquerda tem um controlador I2C
+    status = "okay";
+
+    my_oled_left: oled@3c { // Dê um nome diferente para o nó do OLED da esquerda
+        compatible = "solomon,ssd1306fb";
+        reg = <0x3c>;
+        width = <128>;
+        height = <32>;
+    };
+};
+
+// Mantenha as outras configurações (encoders) conforme a sua necessidade para o lado esquerdo.
+// Exemplo de encoder (ajuste os pinos conforme sua fiação):
+left_encoder: encoder_left {
+    compatible = "alps,ec11";
+    a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+    b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+    steps = <4>;
+    status = "okay";
+    button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+};
+
 sensors {
     compatible = "zmk,keymap-sensors";
-    sensors = <&left_encoder>; // Only the encoder present on THIS board
-    triggers-per_rotation = <4>;
+    sensors = <&left_encoder>;
+    triggers-per-rotation = <4>;
 };
