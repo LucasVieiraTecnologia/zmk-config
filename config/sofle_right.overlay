@@ -1,13 +1,15 @@
 / {
     chosen {
-        zmk,display = &my_oled_right; // Dê um nome diferente para o OLED da direita
+        // Define que este display é o principal para a metade direita
+        zmk,display = &my_oled_right;
     };
 };
 
-&i2c0 { // Certifique-se de que a metade direita tem um controlador I2C (normalmente tem)
+&i2c0 { // Habilita o controlador I2C0
     status = "okay";
 
-    my_oled_right: oled@3c { // Dê um nome diferente para o nó do OLED da direita
+    // Definição do OLED para a metade direita
+    my_oled_right: oled@3c {
         compatible = "solomon,ssd1306fb";
         reg = <0x3c>;
         width = <128>;
@@ -15,19 +17,32 @@
     };
 };
 
-// Mantenha as outras configurações (UART, encoders) conforme a sua necessidade para o lado direito.
-// Exemplo de encoder (ajuste os pinos conforme sua fiação):
+// Configuração UART para comunicação USB (comum na metade direita)
+&uart0 {
+    status = "okay";
+    compatible = "nordic,nrf-uarte";
+    current-speed = <115200>;
+
+    cdc_acm_uart: cdc_acm_uart {
+        compatible = "zephyr,cdc-acm-uart";
+    };
+};
+
+// Definição do encoder ROTATIVO da direita
+// AJUSTE ESTES PINOS (GPIO0 15, 16, 17) DE ACORDO COM A SUA FIAÇÃO FÍSICA!
 right_encoder: encoder_right {
     compatible = "alps,ec11";
     a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
     b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
     steps = <4>;
     status = "okay";
+    // Botão do encoder da direita (pino 17, se for o caso)
     button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 };
 
+// Define os sensores (encoders) usados no keymap
 sensors {
     compatible = "zmk,keymap-sensors";
-    sensors = <&right_encoder>;
+    sensors = <&right_encoder>; // Apenas o encoder que está NESTA metade
     triggers-per-rotation = <4>;
 };
