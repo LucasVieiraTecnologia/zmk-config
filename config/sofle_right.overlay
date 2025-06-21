@@ -1,16 +1,25 @@
-&i2c0 {
-    status = "okay";
-
-    oled_right: oled@3c {
-        compatible = "solomon,ssd1306fb";
-        reg = <0x3c>;
-        width = <128>;
-        height = <32>;
+/ {
+    chosen {
+        zmk,display = &oled;
     };
 };
 
-&{
-    chosen {
-        zmk,display = &oled_right;
+&i2c0 {
+    status = "okay";
+
+    oled: oled@3c {
+        compatible = "solomon,ssd1306fb"; // ou "solomon,sh1106fb" dependendo do seu OLED
+        reg = <0x3c>;
+        width = <32>;
+        height = <128>;
+
+        // Adicione essas linhas se estiver usando SH1106 (mais comum no Sofle V2)
+        // segment-offset = <0>;
+        // page-offset = <0>;
+        // display-offset = <0>;
+        // multiplex-ratio = <31>;
+        // com-pm = <0x12>;
+        // segment-remap;
+        // com-invdir;
     };
 };
