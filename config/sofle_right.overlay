@@ -1,6 +1,6 @@
 / {
     chosen {
-        zmk,display = &my_oled;
+        zmk,display = &my_oled; // The right half usually has the OLED
     };
 };
 
@@ -15,6 +15,7 @@
     };
 };
 
+// Assuming the right half is the "central" half for USB/UART communication
 &uart0 {
     status = "okay";
     compatible = "nordic,nrf-uarte";
@@ -25,26 +26,38 @@
     };
 };
 
-left_encoder: encoder_left {
-    compatible = "alps,ec11";
-    a-gpios = <&gpio0 17 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-    b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-    steps = <4>;
-    status = "okay";
-    // button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // botão no encoder esquerdo, se houver
-};
-
+// The encoder physically on the right side
 right_encoder: encoder_right {
     compatible = "alps,ec11";
+    // Adjust these GPIO pins based on your physical wiring for the RIGHT encoder
     a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
     b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
     steps = <4>;
     status = "okay";
-    button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // botão no encoder direito, se houver
+    // Adjust this GPIO pin based on your physical wiring for the RIGHT encoder button
+    button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 };
 
+// The encoder physically on the left side (if also connected to the right half, less common)
+// If your sofle_right only has one encoder, remove the `left_encoder` definition and only keep `right_encoder` in the sensors node
+// For Sofle, it's more common to have one encoder per half.
+// If your `sofle_right.overlay` only describes the *right physical half*, then `left_encoder` might not belong here.
+// Let's assume you intend to only define the *right* encoder in the *right* half's overlay.
+/*
+left_encoder: encoder_left {
+    compatible = "alps,ec11";
+    a-gpios = <&gpio0 XX (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Placeholder, adjust as needed
+    b-gpios = <&gpio0 YY (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Placeholder, adjust as needed
+    steps = <4>;
+    status = "okay";
+    // button-gpios = <&gpio0 ZZ (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+};
+*/
+
+// If you only have one encoder on this half, only list that one here.
+// For a Sofle, typically each half has one encoder.
 sensors {
     compatible = "zmk,keymap-sensors";
-    sensors = <&left_encoder &right_encoder>;
+    sensors = <&right_encoder>; // Only the encoder present on THIS board
     triggers-per-rotation = <4>;
 };
