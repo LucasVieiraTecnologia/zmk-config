@@ -1,0 +1,16 @@
+&i2c0 {
+    status = "okay";
+
+    oled_right: oled@3c {
+        compatible = "solomon,ssd1306fb";
+        reg = <0x3c>;
+        width = <128>;
+        height = <32>;
+    };
+};
+
+&{
+    chosen {
+        zmk,display = &oled_right;
+    };
+};
