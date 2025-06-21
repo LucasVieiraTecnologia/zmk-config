@@ -1,13 +1,15 @@
 / {
     chosen {
-        zmk,display = &my_oled_left; // Dê um nome diferente para o OLED da esquerda
+        // Define que este display é o principal para a metade esquerda
+        zmk,display = &my_oled_left;
     };
 };
 
-&i2c0 { // Certifique-se de que a metade esquerda tem um controlador I2C
+&i2c0 { // Habilita o controlador I2C0 na metade esquerda
     status = "okay";
 
-    my_oled_left: oled@3c { // Dê um nome diferente para o nó do OLED da esquerda
+    // Definição do OLED para a metade esquerda
+    my_oled_left: oled@3c {
         compatible = "solomon,ssd1306fb";
         reg = <0x3c>;
         width = <128>;
@@ -15,19 +17,21 @@
     };
 };
 
-// Mantenha as outras configurações (encoders) conforme a sua necessidade para o lado esquerdo.
-// Exemplo de encoder (ajuste os pinos conforme sua fiação):
+// Definição do encoder ROTATIVO da esquerda
+// AJUSTE ESTES PINOS (GPIO0 15, 16, 17) DE ACORDO COM A SUA FIAÇÃO FÍSICA!
 left_encoder: encoder_left {
     compatible = "alps,ec11";
     a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
     b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
     steps = <4>;
     status = "okay";
+    // Botão do encoder da esquerda (pino 17, se for o caso)
     button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 };
 
+// Define os sensores (encoders) usados no keymap
 sensors {
     compatible = "zmk,keymap-sensors";
-    sensors = <&left_encoder>;
+    sensors = <&left_encoder>; // Apenas o encoder que está NESTA metade
     triggers-per-rotation = <4>;
 };
