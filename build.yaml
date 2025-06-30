@@ -1,36 +1,91 @@
-# This file generates the GitHub Actions matrix
-# For simple board + shield combinations, add them to the top level board and
-# shield arrays, for more control, add individual board + shield combinations
-# to the `include` property. You can also use the `cmake-args` property to
-# pass flags to the build command, `snippet` to add a Zephyr snippet, and
-# `artifact-name` to assign a name to distinguish build outputs from each other:
-#
-# board: [ "nice_nano_v2" ]
-# shield: [ "corne_left", "corne_right" ]
-# include:
-#   - board: bdn9_rev2
-#   - board: nice_nano_v2
-#     shield: reviung41
-#   - board: nice_nano_v2
-#     shield: corne_left
-#     snippet: studio-rpc-usb-uart
-#     cmake-args: -DCONFIG_ZMK_STUDIO=y
-#     artifact-name: corne_left_with_studio
-#
----
-# ... (parte inicial do arquivo) ...
-include:
-  - board: nice_nano_v2
-    shield: sofle_left
-    snippet: studio-rpc-usb-uart
-    cmake-args: -DCONFIG_ZMK_STUDIO=y
-    artifact-name: sofle_left_with_oled
+name: Build ZMK firmware
+on: [push, pull_request, workflow_dispatch]
 
-  - board: nice_nano_v2
-    shield: sofle_right
-    snippet: studio-rpc-usb-uart
-    cmake-args: -DCONFIG_ZMK_STUDIO=y
-    artifact-name: sofle_right_with_oled
+jobs:
+  build:
+    # O ambiente de execução para este job. 'ubuntu-latest' é o mais comum.
+    runs-on: ubuntu-latest
+    
+    # Define a imagem Docker que contém o ambiente de build do ZMK
+    # Usar uma imagem específica (com tag) é mais estável que usar `latest`
+    container:
+      # Você pode tentar usar uma versão específica aqui para maior estabilidade,
+      # por exemplo: zmkfirmware/zmk-build-arm:2.6 ou zmkfirmware/zmk-build-arm:latest
+      # Se você está usando uma branch específica do ZMK (display-rework),
+      # pode ser melhor usar `latest` para ter as ferramentas mais recentes,
+      # ou uma versão que você sabe que funciona com a `display-rework`.
+      image: zmkfirmware/zmk-build-arm:latest # Ou :2.6, :2.5, etc.
 
-target_sources(app PRIVATE key_count_renderer.c)
+    steps:
+      - name: Checkout ZMK Config
+        # Faz o checkout do seu próprio repositório (onde está este workflow e sua config ZMK)
+        uses: actions/checkout@v4 # Use a versão mais recente do actions/checkout
 
+      - name: Cache west modules
+        # Caching é crucial para acelerar builds subsequentes
+        uses: actions/cache@v4 # Use a versão mais recente do actions/cache
+        env:
+          cache-name: cache-zephyr-modules
+        with:
+          path: |
+            modules/
+            tools/
+            zephyr/
+            bootloader/
+            zmk/
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('west.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: West Init
+        # Inicializa o ambiente West (sistema de build do Zephyr/ZMK)
+        run: west init -l config
+
+      - name: West Update
+        # Baixa todas as dependências definidas no seu manifest.yml
+        # Isso incluirá o seu fork do ZMK (`carriejv/zmk:display-rework`)
+        run: west update
+
+      - name: West Zephyr Export
+        # Exporta o ambiente Zephyr
+        run: west zephyr-export
+
+      # --- Construção da Metade ESQUERDA ---
+      - name: West Build (Sofle Left)
+        # Compila o firmware para a metade esquerda
+        run: |
+          west build -s zmk/app -b nice_nano_v2 -- \
+          -DSHIELD=sofle_left \
+          -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
+
+      - name: Rename Sofle Left UF2
+        # Renomeia o arquivo .uf2 para facilitar a identificação
+        run: cp build/zephyr/zmk.uf2 sofle_left_nice_nano_v2.uf2
+
+      - name: Archive Sofle Left Firmware
+        # Armazena o firmware compilado como um "artefato" do GitHub Actions
+        uses: actions/upload-artifact@v4 # Use a versão mais recente do actions/upload-artifact
+        with:
+          name: sofle_left_firmware
+          path: sofle_left_nice_nano_v2.uf2
+
+      # --- Construção da Metade DIREITA ---
+      - name: West Build (Sofle Right)
+        # Compila o firmware para a metade direita (usando --pristine para um build limpo)
+        run: |
+          west build --pristine -s zmk/app -b nice_nano_v2 -- \
+          -DSHIELD=sofle_right \
+          -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
+
+      - name: Rename Sofle Right UF2
+        # Renomeia o arquivo .uf2 para facilitar a identificação
+        run: cp build/zephyr/zmk.uf2 sofle_right_nice_nano_v2.uf2
+
+      - name: Archive Sofle Right Firmware
+        # Armazena o firmware compilado como um "artefato" do GitHub Actions
+        uses: actions/upload-artifact@v4 # Use a versão mais recente do actions/upload-artifact
+        with:
+          name: sofle_right_firmware
+          path: sofle_right_nice_nano_v2.uf2
