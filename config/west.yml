@@ -1,11 +1,11 @@
 manifest:
   remotes:
     - name: zmkfirmware
-      url-base: https://github.com
-    - name: carriejv
-      url-base: https://github.com
+      url-base: https://github.com/zmkfirmware
   projects:
     - name: zmk
-      remote: carriejv
-      revision: display-rework
+      remote: zmkfirmware
+      revision: main
       import: app/west.yml
+  self:
+    path: config
