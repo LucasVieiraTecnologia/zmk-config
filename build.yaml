@@ -32,3 +32,5 @@ include:
     cmake-args: -DCONFIG_ZMK_STUDIO=y
     artifact-name: sofle_right_with_oled
 
+target_sources(app PRIVATE key_count_renderer.c)
+
