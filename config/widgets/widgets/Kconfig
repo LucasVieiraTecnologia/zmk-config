@@ -1,0 +1,16 @@
+menu "User Custom Widgets"
+
+config ZMK_WIDGET_KEY_COUNT
+    bool "Enable Key Count Widget"
+    depends on ZMK_DISPLAY
+    help
+      Enable a custom display widget that shows the number of key presses.
+
+config ZMK_WIDGET_KEY_COUNT_LABEL
+    string "Key Count Widget Label"
+    depends on ZMK_WIDGET_KEY_COUNT
+    default "Keys"
+    help
+      The label to display before the key count on the OLED.
+
+endmenu
