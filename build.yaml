@@ -1,11 +1,50 @@
-# --- Construção da Metade ESQUERDA ---
+name: Build ZMK firmware
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: zmkfirmware/zmk-build-arm:latest # Ou uma versão específica, como :2.6
+
+    steps:
+      - name: Checkout ZMK Config
+        uses: actions/checkout@v4
+
+      - name: Cache west modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-zephyr-modules
+        with:
+          path: |
+            modules/
+            tools/
+            zephyr/
+            bootloader/
+            zmk/
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('west.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: West Init
+        run: west init -l config
+
+      - name: West Update
+        run: west update
+
+      - name: West Zephyr Export
+        run: west zephyr-export
+
+      # --- Construção da Metade ESQUERDA ---
       - name: West Build (Sofle Left)
         run: |
           west build -s zmk/app -b nice_nano_v2 -- \
           -DSHIELD=sofle_left \
           -DZMK_CONFIG="${GITHUB_WORKSPACE}/config" \
           -DEXTRA_SOURCES="${GITHUB_WORKSPACE}/config/widgets" \
-          -DZMK_EXTRA_KCONFIG_DIRS="${GITHUB_WORKSPACE}/config/widgets" # <--- ADICIONE ESTA LINHA
+          -DZMK_EXTRA_KCONFIG_DIRS="${GITHUB_WORKSPACE}/config/widgets" # <--- ESTA LINHA FOI A ÚLTIMA ADICIONADA AQUI
           # -DSNIPPET="studio-rpc-usb-uart"
 
       # --- Construção da Metade DIREITA ---
@@ -15,5 +54,5 @@
           -DSHIELD=sofle_right \
           -DZMK_CONFIG="${GITHUB_WORKSPACE}/config" \
           -DEXTRA_SOURCES="${GITHUB_WORKSPACE}/config/widgets" \
-          -DZMK_EXTRA_KCONFIG_DIRS="${GITHUB_WORKSPACE}/config/widgets" # <--- ADICIONE ESTA LINHA
+          -DZMK_EXTRA_KCONFIG_DIRS="${GITHUB_WORKSPACE}/config/widgets" # <--- ESTA LINHA FOI A ÚLTIMA ADICIONADA AQUI
           # -DSNIPPET="studio-rpc-usb-uart"
