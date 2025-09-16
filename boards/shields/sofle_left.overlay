@@ -17,10 +17,6 @@
     tx-pin = <22>;
 };
 
-&gpio0 {
-    status = "okay";
-};
-
 / {
     chosen {
         zmk,studio-rpc-uart = &uart1;
