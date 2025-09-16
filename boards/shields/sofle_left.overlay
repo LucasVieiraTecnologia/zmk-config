@@ -18,8 +18,12 @@
     };
 };
 
-/ {
+&uart0 {
+    status = "okay";
+};
+
+{
     chosen {
-        zmk,studio-rpc-uart = &uart0;
+        zmk_studio_rpc_uart = &uart0;
     };
 };
