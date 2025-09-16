@@ -1,0 +1,11 @@
+&display {
+    compatible = "solomon,ssd1306fb";
+    i2c-address = <0x3C>;
+    label = "OLED_DISPLAY";
+    height = <32>;
+    width = <128>;
+    segment-offset = <0>;
+    page-offset = <0>;
+    display-offset = <0>;
+    multiplex-ratio = <31>;
+};
