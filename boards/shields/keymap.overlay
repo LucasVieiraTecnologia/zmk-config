@@ -1,0 +1,12 @@
+/ {
+    keymap {
+        compatible = "zmk,keymap";
+
+        encoders {
+            bindings = <
+                &inc_dec_kp KC_VOLD KC_VOLU   /* encoder esquerdo: volume */
+                &inc_dec_kp KC_PGDN KC_PGUP   /* encoder direito: navegação */
+            >;
+        };
+    };
+};
