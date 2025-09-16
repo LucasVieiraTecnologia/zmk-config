@@ -18,8 +18,6 @@
     status = "okay";
 };
 
-{
-    chosen {
-        zmk_studio_rpc_uart = &uart0;
-    };
+chosen {
+    zmk_studio_rpc_uart = &uart0;
 };
