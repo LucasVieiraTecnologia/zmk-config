@@ -1,0 +1,9 @@
+/ {
+    chosen {
+        zmk,studio-rpc-uart = &uart0;
+    };
+};
+
+&uart0 {
+    status = "okay";
+};
