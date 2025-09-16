@@ -9,3 +9,16 @@
     display-offset = <0>;
     multiplex-ratio = <31>;
 };
+
+&gpio0 {
+    status = "okay";
+};
+
+/ {
+    encoder_right: encoder_right {
+        compatible = "zmk,rotary-encoder";
+        label = "ENCODER_RIGHT";
+        gpios = <&gpio0 29 GPIO_ACTIVE_LOW>, <&gpio0 30 GPIO_ACTIVE_LOW>;
+        debounce-interval-ms = <5>;
+    };
+};
