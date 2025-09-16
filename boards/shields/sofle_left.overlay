@@ -1,3 +1,4 @@
+// Outras definições do seu overlay, como a do OLED
 &i2c1 {
     status = "okay";
 
@@ -14,10 +15,13 @@
     };
 };
 
-&uart0 {
-    status = "okay";
+// Adicione as definições do ZMK Studio no final
+/ {
+    chosen {
+        zmk,studio-rpc-uart = &uart0;
+    };
 };
 
-chosen {
-    zmk_studio_rpc_uart = &uart0;
+&uart0 {
+    status = "okay";
 };
