@@ -1,6 +1,6 @@
 manifest:
   defaults:
-    revision: main   # use o branch mais recente do fork, não o v0.2 (que é antigo)
+    revision: main
   remotes:
     - name: urob
       url-base: https://github.com/urob
