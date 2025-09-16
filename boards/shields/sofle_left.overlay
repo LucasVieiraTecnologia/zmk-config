@@ -17,3 +17,9 @@
         multiplex-ratio = <31>;
     };
 };
+
+/ {
+    chosen {
+        zmk,studio-rpc-uart = &uart0;
+    };
+};
