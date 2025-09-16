@@ -1,3 +1,9 @@
+/ {
+    chosen {
+        zmk,keyboard = &keymap;
+    };
+};
+
 &display {
     compatible = "solomon,ssd1306fb";
     i2c-address = <0x3C>;
@@ -8,4 +14,17 @@
     page-offset = <0>;
     display-offset = <0>;
     multiplex-ratio = <31>;
+};
+
+&gpio0 {
+    status = "okay";
+};
+
+/ {
+    encoder_left: encoder_left {
+        compatible = "zmk,rotary-encoder";
+        label = "ENCODER_LEFT";
+        gpios = <&gpio0 26 GPIO_ACTIVE_LOW>, <&gpio0 27 GPIO_ACTIVE_LOW>;
+        debounce-interval-ms = <5>;
+    };
 };
