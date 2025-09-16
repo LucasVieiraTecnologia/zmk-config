@@ -9,3 +9,16 @@
     display-offset = <0>;
     multiplex-ratio = <31>;
 };
+
+&uart1 {
+    status = "okay";
+    current-speed = <115200>;
+    rx-pin = <20>;
+    tx-pin = <22>;
+};
+
+/ {
+    chosen {
+        zmk,studio-rpc-uart = &uart1;
+    };
+};
