@@ -1,15 +1,19 @@
-#include <zmk/display/widgets/output_status.h>
 #include <zmk/display/widgets/battery_status.h>
 #include <zmk/display/widgets/layer_status.h>
 #include <zmk/display/widgets/wpm_status.h>
 #include <zmk/display/status_screen.h>
+#include <zmk/events/wpm_state_changed.h>
+#include <zmk/event_manager.h>
+#include <zmk/wpm.h>
 
 #include <logging/log.h>
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 static lv_obj_t *zmk_widget_anim_img;
+static lv_obj_t *max_wpm_label;
+static uint8_t max_wpm = 0;
 
-// Definição dos frames da animação do CatJAM (código da animação permanece o mesmo)
+// Definição dos frames da animação do CatJAM
 static const uint8_t cat_jam_data[][42] = {
     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -39,34 +43,44 @@ const void *get_anim_frame(int wpm) {
     }
 }
 
-int anim_widget_update_cb(struct zmk_widget_wpm *widget, lv_obj_t *wpm_label) {
-    int wpm = zmk_wpm_get_state();
-    const void *frame = get_anim_frame(wpm);
-    if (zmk_widget_anim_img != NULL) {
-        lv_img_set_src(zmk_widget_anim_img, frame);
+int wpm_status_listener(const zmk_event_t *eh) {
+    uint8_t wpm = zmk_wpm_get_state();
+    if (wpm > max_wpm) {
+        max_wpm = wpm;
     }
-    return 0;
+    const void *frame = get_anim_frame(wpm);
+    if (wpm > 0) {
+        lv_obj_set_hidden(zmk_widget_anim_img, false);
+        lv_obj_set_hidden(max_wpm_label, true);
+        lv_img_set_src(zmk_widget_anim_img, frame);
+    } else {
+        lv_obj_set_hidden(zmk_widget_anim_img, true);
+        lv_obj_set_hidden(max_wpm_label, false);
+        lv_label_set_text_fmt(max_wpm_label, "Max: %d", max_wpm);
+    }
+    return ZMK_EV_EVENT_BUBBLE;
 }
-ZMK_DISPLAY_WIDGET_LISTENER(anim_widget, zmk_wpm_state_changed, anim_widget_update_cb, ZMK_WIDGET_WPM_POS)
 
+ZMK_LISTENER(wpm_status_listener, wpm_status_listener);
+ZMK_SUBSCRIPTION(wpm_status_listener, zmk_wpm_state_changed);
 
-// --- NOVA FUNÇÃO DE LAYOUT DA TELA ---
 #if IS_ENABLED(CONFIG_ZMK_DISPLAY)
 static void set_status_screen(lv_obj_t *screen) {
-    // Canto superior esquerdo: Status da Camada
     lv_obj_t *layer_status_widget = zmk_widget_layer_status_create(screen);
     lv_obj_align(layer_status_widget, NULL, LV_ALIGN_IN_TOP_LEFT, 2, 0);
 
-    // Canto inferior esquerdo: Status da Bateria
     lv_obj_t *battery_status_widget = zmk_widget_battery_status_create(screen);
     lv_obj_align(battery_status_widget, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 2, 0);
 
-    // Lado direito: Animação
     zmk_widget_anim_img = lv_img_create(screen, NULL);
     lv_obj_align(zmk_widget_anim_img, NULL, LV_ALIGN_IN_RIGHT_MID, -2, 0);
+
+    max_wpm_label = lv_label_create(screen, NULL);
+    lv_obj_align(max_wpm_label, NULL, LV_ALIGN_IN_RIGHT_MID, -2, 0);
+
+    lv_obj_set_hidden(zmk_widget_anim_img, true);
 }
 
-// Função que o ZMK chama para construir a tela. Ela chama nossa função de layout.
 lv_obj_t *zmk_display_status_screen() {
     lv_obj_t *screen;
     screen = lv_obj_create(NULL, NULL);
