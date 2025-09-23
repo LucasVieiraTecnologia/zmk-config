@@ -1,0 +1,99 @@
+/ {
+    chosen {
+        aliases {
+            // Alias para 'pro_micro_i2c', necessário para o sofle.dtsi
+            pro_micro_i2c = &i2c0;
+        };
+        // ESSENCIAL: Habilitar o display para ser 'chosen' pelo ZMK
+        zmk,display = &oled;
+    };
+
+    &i2c0 {
+        status = "okay"; // Habilita o controlador I2C0
+
+        // --- Expansor de GPIO I2C (Descomente e ajuste se o seu Sofle usa um) ---
+        /*
+        pcf8574_0: pcf8574@20 {
+            compatible = "nxp,pcf8574"; // ou "microchip,mcp23017"
+            reg = <0x20>;
+            gpio-cells = <2>;
+            #gpio-cells = <2>;
+            // gpios = <&pcf8574_0 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>, ...
+        };
+        */
+
+        // --- Display OLED (Descomente e ajuste se o seu Sofle tem um no lado esquerdo) ---
+        // ESTA SEÇÃO PRECISA ESTAR DESCOMENTADA E CORRETA!
+        oled: oled@3c { // O nome "oled" é uma boa prática e é referenciado em "zmk,display = &oled;"
+            compatible = "solomon,ssd1306fb"; // **VERIFIQUE SE É SSD1306FB ou SH1106FB** para o seu display
+            reg = <0x3c>; // Endereço I2C do seu OLED (0x3C ou 0x3D são os mais comuns)
+            width = <128>;
+            height = <32>; // **O Sofle V2 geralmente usa 128x32. Confirme o seu!**
+            
+            // As propriedades abaixo são comuns para SH1106 ou SSD1306 e podem precisar de ajuste
+            // dependendo do seu display específico e do driver.
+            // Se a imagem aparecer invertida ou distorcida, alguns desses valores podem ser a causa.
+            // Para SH1106 (mais comum no Sofle V2), adicione:
+            // segment-offset = <0>;
+            // page-offset = <0>;
+            // display-offset = <0>;
+            // multiplex-ratio = <31>; // (height - 1)
+            // com-pm = <0x12>; // Pode variar, mas 0x12 é comum para 128x32
+            // segment-remap; // Pode precisar remover se a imagem estiver invertida horizontalmente
+            // com-invdir; // Pode precisar remover se a imagem estiver invertida verticalmente
+            // read-modify-write; // Usado por alguns drivers
+            // prechargep = <0x22>; // Valor comum, pode variar
+
+            // Para SSD1306 (se for o seu caso):
+            // display-offset = <0>;
+            // multiplex-ratio = <31>;
+            // com-pm = <0x12>;
+            // segment-remap;
+            // com-invdir;
+            // prechargep = <0x22>;
+            // low-power; // Se tiver opção de baixo consumo
+        };
+    };
+
+    // --- SEÇÃO CRÍTICA PARA A PORTA COM USB (CDC ACM) ---
+    // Habilita a UART0 no Devicetree e a configura para a porta serial virtual.
+    &uart0 {
+        status = "okay"; // Liga o periférico UART0
+        compatible = "nordic,nrf-uarte"; // Tipo de periférico UART no nRF52840
+        current-speed = <115200>; // Velocidade de comunicação padrão
+
+        // Este nó filho é o que vincula a UART0 à funcionalidade CDC ACM (Serial Virtual)
+        cdc_acm_uart: cdc_acm_uart {
+            compatible = "zephyr,cdc-acm-uart";
+        };
+    };
+
+    // --- ENCODERS: AGORA COM BOTÕES HABILITADOS ---
+    // ESTES SÃO PINOS DE EXEMPLO. VOCÊ DEVE SUBSTITUÍ-LOS COM OS PINOS REAIS DO SEU HARDWARE.
+    left_encoder: encoder_left {
+        compatible = "alps,ec11";
+        a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // Seus pinos A e B
+        b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        steps = <4>;
+        status = "okay";
+        // button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // <--- MANTIDO COMENTADO SE NÃO HÁ BOTÃO NO ENCODER ESQUERDO
+    };
+
+    right_encoder: encoder_right {
+        compatible = "alps,ec11";
+        // PINOS DE ROTAÇÃO A e B do encoder direito. CONFIRME ESTES PINOS!
+        a-gpios = <&gpio0 17 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // PINO A DE EXEMPLO PARA ENCODER DIREITO
+        b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // PINO B DE EXEMPLO PARA ENCODER DIREITO
+        steps = <4>;
+        status = "okay";
+        // PINO DO BOTÃO DO ENCODER DIREITO. DESCOMENTADO COM PINO DE EXEMPLO.
+        button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // PINO DE EXEMPLO PARA BOTÃO DO ENCODER DIREITO
+    };
+
+    // Este nó 'sensors' vincula os encoders ao sistema de sensor ZMK.
+    sensors {
+        compatible = "zmk,keymap-sensors";
+        sensors = <&left_encoder &right_encoder>; // Garante que AMBOS estão vinculados
+        triggers-per-rotation = <4>; // Ajuste para o seu encoder
+    };
+};
