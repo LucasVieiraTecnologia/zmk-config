@@ -39,7 +39,7 @@
         b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
         steps = <4>;
         status = "okay";
-        button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // Pino padrão do Sofle V2
+        button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
     };
 
     sensors {
