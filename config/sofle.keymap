@@ -17,7 +17,6 @@
 
 / {
 
-    // Activate ADJUST layer by pressing raise and lower
     conditional_layers {
         compatible = "zmk,conditional-layers";
         adjust_layer {
@@ -37,7 +36,8 @@
 &kp LSHFT &kp Z  &kp X    &kp C    &kp V     &kp B       &kp C_MUTE &kp C_MUTE  &kp N  &kp M     &kp COMMA &kp DOT  &kp FSLH &kp RSHFT
                            &kp LGUI &kp LALT &kp LCTRL &mo LOWER  &kp RET    &kp SPACE  &mo RAISE  &kp RCTRL &kp RALT  &kp RGUI
             >;
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp C_VOL_UP C_VOL_DN>;
+            // ALTERAÇÃO: Revertendo a rotação para Page Up/Down
+            sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN>;
         };
 
         lower_layer {
@@ -49,7 +49,8 @@
 &trans    &kp EQUAL &kp MINUS &kp PLUS    &kp LBRC  &kp RBRC     &trans &trans      &kp LBKT  &kp RBKT &kp SEMI  &kp COLON &kp BSLH  &trans
                                           &trans    &trans      &trans    &trans      &trans    &trans &trans    &trans   &trans    &trans
             >;
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp C_VOL_UP C_VOL_DN>;
+            // ALTERAÇÃO: Revertendo a rotação para Page Up/Down
+            sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN>;
         };
 
         raise_layer {
@@ -61,7 +62,8 @@
 &trans     &kp K_UNDO   &kp K_CUT    &kp K_COPY   &kp K_PASTE  &trans        &trans &trans          &trans    &trans    &trans   &trans    &trans &trans
                                                  &trans       &trans       &trans       &trans        &trans &trans      &trans    &trans    &trans   &trans
             >;
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp C_VOL_UP C_VOL_DN>;
+            // ALTERAÇÃO: Revertendo a rotação para Page Up/Down
+            sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN>;
         };
 
         adjust_layer {
