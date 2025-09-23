@@ -1,9 +1,14 @@
-#include <zmk/event_manager.h>
-#include <zmk/events/wpm_state_changed.h>
-#include <zmk/display/widgets/wpm.h>
+#include <zmk/display/widgets/output_status.h>
+#include <zmk/display/widgets/battery_status.h>
+#include <zmk/display/widgets/layer_status.h>
+#include <zmk/display/widgets/wpm_status.h>
+#include <zmk/display/status_screen.h>
 
 #include <logging/log.h>
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
+
+// Objeto que vai guardar nossa imagem de animação
+static lv_obj_t *zmk_widget_anim_img;
 
 // Definição dos frames da animação do CatJAM
 static const uint8_t cat_jam_data[][42] = {
@@ -24,25 +29,45 @@ static const uint8_t cat_jam_data[][42] = {
      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 };
 
-const void *wpm_get_cat_jam_frame(int wpm) {
-    if (wpm < 10) {
-        return cat_jam_data[0];
-    } else if (wpm < 30) {
-        return cat_jam_data[1];
-    } else if (wpm < 50) {
-        return cat_jam_data[2];
-    } else if (wpm < 80) {
-        return cat_jam_data[3];
-    } else {
-        return cat_jam_data[4];
+// Função que seleciona o frame da animação
+const void *get_anim_frame(int wpm) {
+    wpm /= 10;
+    switch(wpm) {
+        case 0: return cat_jam_data[0];
+        case 1: case 2: return cat_jam_data[1];
+        case 3: case 4: return cat_jam_data[2];
+        case 5: case 6: case 7: return cat_jam_data[3];
+        default: return cat_jam_data[4];
     }
 }
 
-void wpm_cat_jam_anim_callback(struct zmk_widget_wpm *widget, lv_obj_t *wpm_label) {
+// Função que é chamada para atualizar a animação na tela
+int anim_widget_update_cb(struct zmk_widget_wpm *widget, lv_obj_t *wpm_label) {
     int wpm = zmk_wpm_get_state();
-    const void *frame = wpm_get_cat_jam_frame(wpm);
-    lv_img_set_src(wpm_label, frame);
+    const void *frame = get_anim_frame(wpm);
+    if (zmk_widget_anim_img != NULL) {
+        lv_img_set_src(zmk_widget_anim_img, frame);
+    }
+    return 0;
 }
+ZMK_DISPLAY_WIDGET_LISTENER(anim_widget, zmk_wpm_state_changed, anim_widget_update_cb, ZMK_WIDGET_WPM_POS)
 
-ZMK_DISPLAY_WIDGET_LISTENER(cat_jam_wpm_widget, zmk_wpm_state_changed, wpm_cat_jam_anim_callback,
-                          ZMK_WIDGET_WPM_POS)
+
+// Função que constrói nossa tela customizada
+lv_obj_t *zmk_display_status_screen() {
+    lv_obj_t *screen;
+    screen = lv_obj_create(NULL, NULL);
+
+    // Adiciona o widget de status da bateria (que já inclui a porcentagem por padrão)
+    zmk_widget_battery_status_init(screen, 0);
+
+    // Adiciona o widget de status da camada
+    zmk_widget_layer_status_init(screen, 0);
+
+    // Cria o nosso widget de imagem para a animação
+    zmk_widget_anim_img = lv_img_create(screen, NULL);
+    // Posiciona a animação no canto direito da tela
+    lv_obj_align(zmk_widget_anim_img, NULL, LV_ALIGN_IN_RIGHT_MID, 0, 0);
+
+    return screen;
+}
