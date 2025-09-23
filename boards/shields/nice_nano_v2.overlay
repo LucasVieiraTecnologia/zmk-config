@@ -1,65 +1,51 @@
 / {
     chosen {
         aliases {
-            // Alias para 'pro_micro_i2c', necessário para o sofle.dtsi
             pro_micro_i2c = &i2c0;
         };
-        // ESSENCIAL: Habilitar o display para ser 'chosen' pelo ZMK
         zmk,display = &oled;
     };
 
     &i2c0 {
-        status = "okay"; // Habilita o controlador I2C0
-
-        // --- Display OLED (Descomente e ajuste se o seu Sofle tem um no lado esquerdo) ---
-        // ESTA SEÇÃO PRECISA ESTAR DESCOMENTADA E CORRETA!
-        oled: oled@3c { // O nome "oled" é uma boa prática e é referenciado em "zmk,display = &oled;"
-            compatible = "solomon,ssd1306fb"; // **VERIFIQUE SE É SSD1306FB ou SH1106FB** para o seu display
-            reg = <0x3c>; // Endereço I2C do seu OLED (0x3C ou 0x3D são os mais comuns)
+        status = "okay";
+        oled: oled@3c {
+            compatible = "solomon,ssd1306fb";
+            reg = <0x3c>;
             width = <128>;
-            height = <32>; // **O Sofle V2 geralmente usa 128x32. Confirme o seu!**
+            height = <32>;
         };
     };
-    
-    // --- SEÇÃO CRÍTICA PARA A PORTA COM USB (CDC ACM) ---
-    // Habilita a UART0 no Devicetree e a configura para a porta serial virtual.
-    &uart0 {
-        status = "okay"; // Liga o periférico UART0
-        compatible = "nordic,nrf-uarte"; // Tipo de periférico UART no nRF52840
-        current-speed = <115200>; // Velocidade de comunicação padrão
 
-        // Este nó filho é o que vincula a UART0 à funcionalidade CDC ACM (Serial Virtual)
+    &uart0 {
+        status = "okay";
+        compatible = "nordic,nrf-uarte";
+        current-speed = <115200>;
         cdc_acm_uart: cdc_acm_uart {
             compatible = "zephyr,cdc-acm-uart";
         };
     };
 
-    // --- ENCODERS: AGORA COM BOTÕES HABILITADOS ---
-    // ESTES SÃO PINOS DE EXEMPLO. VOCÊ DEVE SUBSTITUÍ-LOS COM OS PINOS REAIS DO SEU HARDWARE.
     left_encoder: encoder_left {
         compatible = "alps,ec11";
         a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
         b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
         steps = <4>;
         status = "okay";
-        // button-gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // <--- MANTIDO COMENTADO SE NÃO HÁ BOTÃO NO ENCODER ESQUERDO
     };
 
     right_encoder: encoder_right {
         compatible = "alps,ec11";
-        // PINOS DE ROTAÇÃO A e B do encoder direito. CONFIRME ESTES PINOS!
-        a-gpios = <&gpio0 17 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // PINO A DE EXEMPLO PARA ENCODER DIREITO
-        b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; // PINO B DE EXEMPLO PARA ENCODER DIREITO
+        a-gpios = <&gpio0 17 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
         steps = <4>;
         status = "okay";
-        // PINO DO BOTÃO DO ENCODER DIREITO. DESCOMENTADO COM PINO DE EXEMPLO.
-        button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // PINO DE EXEMPLO PARA BOTÃO DO ENCODER DIREITO
+        // ALTERAÇÃO: Trocando o pino do botão de 19 para 20 para teste.
+        button-gpios = <&gpio0 20 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
     };
 
-    // Este nó 'sensors' vincula os encoders ao sistema de sensor ZMK.
     sensors {
         compatible = "zmk,keymap-sensors";
-        sensors = <&left_encoder &right_encoder>; // Garante que AMBOS estão vinculados
-        triggers-per-rotation = <4>; // Ajuste para o seu encoder
+        sensors = <&left_encoder &right_encoder>;
+        triggers-per-rotation = <4>;
     };
 };
