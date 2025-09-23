@@ -7,10 +7,9 @@
 #include <logging/log.h>
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
-// Objeto que vai guardar nossa imagem de animação
 static lv_obj_t *zmk_widget_anim_img;
 
-// Definição dos frames da animação do CatJAM
+// Definição dos frames da animação do CatJAM (código da animação permanece o mesmo)
 static const uint8_t cat_jam_data[][42] = {
     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -29,7 +28,6 @@ static const uint8_t cat_jam_data[][42] = {
      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 };
 
-// Função que seleciona o frame da animação
 const void *get_anim_frame(int wpm) {
     wpm /= 10;
     switch(wpm) {
@@ -41,7 +39,6 @@ const void *get_anim_frame(int wpm) {
     }
 }
 
-// Função que é chamada para atualizar a animação na tela
 int anim_widget_update_cb(struct zmk_widget_wpm *widget, lv_obj_t *wpm_label) {
     int wpm = zmk_wpm_get_state();
     const void *frame = get_anim_frame(wpm);
@@ -53,21 +50,27 @@ int anim_widget_update_cb(struct zmk_widget_wpm *widget, lv_obj_t *wpm_label) {
 ZMK_DISPLAY_WIDGET_LISTENER(anim_widget, zmk_wpm_state_changed, anim_widget_update_cb, ZMK_WIDGET_WPM_POS)
 
 
-// Função que constrói nossa tela customizada
+// --- NOVA FUNÇÃO DE LAYOUT DA TELA ---
+#if IS_ENABLED(CONFIG_ZMK_DISPLAY)
+static void set_status_screen(lv_obj_t *screen) {
+    // Canto superior esquerdo: Status da Camada
+    lv_obj_t *layer_status_widget = zmk_widget_layer_status_create(screen);
+    lv_obj_align(layer_status_widget, NULL, LV_ALIGN_IN_TOP_LEFT, 2, 0);
+
+    // Canto inferior esquerdo: Status da Bateria
+    lv_obj_t *battery_status_widget = zmk_widget_battery_status_create(screen);
+    lv_obj_align(battery_status_widget, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 2, 0);
+
+    // Lado direito: Animação
+    zmk_widget_anim_img = lv_img_create(screen, NULL);
+    lv_obj_align(zmk_widget_anim_img, NULL, LV_ALIGN_IN_RIGHT_MID, -2, 0);
+}
+
+// Função que o ZMK chama para construir a tela. Ela chama nossa função de layout.
 lv_obj_t *zmk_display_status_screen() {
     lv_obj_t *screen;
     screen = lv_obj_create(NULL, NULL);
-
-    // Adiciona o widget de status da bateria (que já inclui a porcentagem por padrão)
-    zmk_widget_battery_status_init(screen, 0);
-
-    // Adiciona o widget de status da camada
-    zmk_widget_layer_status_init(screen, 0);
-
-    // Cria o nosso widget de imagem para a animação
-    zmk_widget_anim_img = lv_img_create(screen, NULL);
-    // Posiciona a animação no canto direito da tela
-    lv_obj_align(zmk_widget_anim_img, NULL, LV_ALIGN_IN_RIGHT_MID, 0, 0);
-
+    set_status_screen(screen);
     return screen;
 }
+#endif
