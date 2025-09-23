@@ -39,8 +39,7 @@
         b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
         steps = <4>;
         status = "okay";
-        // ALTERAÇÃO: Pino do botão restaurado para o padrão 19.
-        button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; // Pino padrão do Sofle V2
     };
 
     sensors {
