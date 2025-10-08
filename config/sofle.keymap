@@ -16,9 +16,6 @@
 #define ADJUST 3
 
 / {
-    // =================================================================
-    // KEYMAP DEFINITION (Mapas de Camadas)
-    // =================================================================
 
 	conditional_layers {
 		compatible = "zmk,conditional-layers";
@@ -39,8 +36,9 @@
 &kp LSHFT &kp Z &kp X &kp C &kp V &kp B &kp C_MUTE &kp C_MUTE &kp N &kp M &kp COMMA &kp DOT &kp FSLH &kp RSHFT
 			&kp LGUI &kp LALT &kp LCTRL &mo LOWER &kp RET &kp SPACE &mo RAISE &kp RCTRL &kp RALT &kp RGUI
 			>;
-			// 1º Slot (Encoder Esquerdo): Volume | 2º Slot (Encoder Direito): Page Up/Down
-			sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
+			// Encoder 1 (Direito, se for o primeiro sensor): PG_UP/PG_DN
+			// Encoder 2 (Esquerdo): C_VOL_UP/C_VOL_DN
+			sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp C_VOL_UP C_VOL_DN>;
 		};
 
 		lower_layer {
@@ -52,8 +50,9 @@
 &trans &kp EQUAL &kp MINUS &kp PLUS &kp LBRC &kp RBRC &trans &trans &kp LBKT &kp RBKT &kp SEMI &kp COLON &kp BSLH &trans
 			&trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
 			>;
-			// 1º Slot (Esquerdo): Volume | 2º Slot (Direito): Page Up/Down
-			sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
+			// Encoder 1 (Direito, se for o primeiro sensor): PG_UP/PG_DN
+			// Encoder 2 (Esquerdo): C_VOL_UP/C_VOL_DN
+			sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp C_VOL_UP C_VOL_DN>;
 		};
 
 		raise_layer {
@@ -65,8 +64,9 @@
 &trans &kp K_UNDO &kp K_CUT &kp K_COPY &kp K_PASTE &trans &trans &trans &trans &trans &trans &trans &trans &trans
 			&trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
 			>;
-			// 1º Slot (Esquerdo): Volume | 2º Slot (Direito): Page Up/Down
-			sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
+			// Encoder 1 (Direito, se for o primeiro sensor): PG_UP/PG_DN
+			// Encoder 2 (Esquerdo): C_VOL_UP/C_VOL_DN
+			sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp C_VOL_UP C_VOL_DN>;
 		};
 
 		adjust_layer {
@@ -78,62 +78,9 @@
 &none &none &none &none &none &none &rgb_ug RGB_TOG &none &none &none &none &none &none &none
 			&none &none &none &none &none &none &none &none &none &none
 			>;
-			// 1º Slot (Esquerdo): Volume | 2º Slot (Direito): Page Up/Down
-			sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
+			// Encoder 1 (Direito, se for o primeiro sensor): PG_UP/PG_DN
+			// Encoder 2 (Esquerdo): C_VOL_UP/C_VOL_DN
+			sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp C_VOL_UP C_VOL_DN>;
 		};
-	};
-
-    // =================================================================
-    // DEVICE TREE OVERLAYS (Nós de Hardware e Periféricos)
-    // =================================================================
-
-	chosen {
-		aliases {
-			pro_micro_i2c = &i2c0;
-		};
-		zmk,display = &oled;
-	};
-
-	&i2c0 {
-		status = "okay";
-		oled: oled@3c {
-			compatible = "solomon,ssd1306fb";
-			reg = <0x3c>;
-			width = <128>;
-			height = <32>;
-		};
-	};
-
-	&uart0 {
-		status = "okay";
-		compatible = "nordic,nrf-uarte";
-		current-speed = <115200>;
-		cdc_acm_uart: cdc_acm_uart {
-			compatible = "zephyr,cdc-acm-uart";
-		};
-	};
-
-	left_encoder: encoder_left {
-		compatible = "alps,ec11";
-		a-gpios = <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-		b-gpios = <&gpio0 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-		steps = <4>;
-		status = "okay";
-	};
-
-	right_encoder: encoder_right {
-		compatible = "alps,ec11";
-		a-gpios = <&gpio0 17 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-		b-gpios = <&gpio0 18 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-		steps = <4>;
-		status = "okay";
-		button-gpios = <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-	};
-
-	sensors {
-		compatible = "zmk,keymap-sensors";
-		// Ordem correta: Esquerdo (Volume) -> Direito (Page Up/Down)
-		sensors = <&left_encoder &right_encoder>;
-		triggers-per-rotation = <4>;
 	};
 };
