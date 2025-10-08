@@ -17,7 +17,7 @@
 
 / {
     // =================================================================
-    // KEYMAP DEFINITION
+    // KEYMAP DEFINITION (Mapas de Camadas)
     // =================================================================
 
 	conditional_layers {
@@ -39,7 +39,7 @@
 &kp LSHFT &kp Z &kp X &kp C &kp V &kp B &kp C_MUTE &kp C_MUTE &kp N &kp M &kp COMMA &kp DOT &kp FSLH &kp RSHFT
 			&kp LGUI &kp LALT &kp LCTRL &mo LOWER &kp RET &kp SPACE &mo RAISE &kp RCTRL &kp RALT &kp RGUI
 			>;
-			// 1º Slot (Esquerdo): Volume | 2º Slot (Direito): Page Up/Down
+			// 1º Slot (Encoder Esquerdo): Volume | 2º Slot (Encoder Direito): Page Up/Down
 			sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
 		};
 
@@ -84,7 +84,7 @@
 	};
 
     // =================================================================
-    // DEVICE TREE OVERLAYS (Movidos para dentro do nó principal)
+    // DEVICE TREE OVERLAYS (Nós de Hardware e Periféricos)
     // =================================================================
 
 	chosen {
@@ -132,7 +132,8 @@
 
 	sensors {
 		compatible = "zmk,keymap-sensors";
+		// Ordem correta: Esquerdo (Volume) -> Direito (Page Up/Down)
 		sensors = <&left_encoder &right_encoder>;
 		triggers-per-rotation = <4>;
 	};
-}; // O ÚNICO FECHAMENTO DO NÓ PRINCIPAL
+};
