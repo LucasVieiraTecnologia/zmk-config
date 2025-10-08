@@ -16,6 +16,9 @@
 #define ADJUST 3
 
 / {
+    // =================================================================
+    // KEYMAP DEFINITION
+    // =================================================================
 
 	conditional_layers {
 		compatible = "zmk,conditional-layers";
@@ -79,9 +82,11 @@
 			sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
 		};
 	};
-};
 
-/ {
+    // =================================================================
+    // DEVICE TREE OVERLAYS (Movidos para dentro do nó principal)
+    // =================================================================
+
 	chosen {
 		aliases {
 			pro_micro_i2c = &i2c0;
@@ -130,4 +135,4 @@
 		sensors = <&left_encoder &right_encoder>;
 		triggers-per-rotation = <4>;
 	};
-};
+}; // O ÚNICO FECHAMENTO DO NÓ PRINCIPAL
