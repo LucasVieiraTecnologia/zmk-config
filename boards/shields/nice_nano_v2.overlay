@@ -1,47 +1,44 @@
-#include <dt-bindings/led/led.h>
+// #include <dt-bindings/led/led.h> (Removido, não é mais necessário sem o LED)
+#include <dt-bindings/zmk/matrix_transform.h> // Garantir que está incluído se não estiver no principal
 
 &pinctrl {
-    spi3_default: spi3_default {
-        group1 {
-            psels = <NRF_PSEL(SPIM_MOSI, 0, 6)>;
-        };
-    };
-
-    spi3_sleep: spi3_sleep {
-        group1 {
-            psels = <NRF_PSEL(SPIM_MOSI, 0, 6)>;
-            low-power-enable;
-        };
-    };
-};
-
-&spi3 {
-    compatible = "nordic,nrf-spim";
-    status = "okay";
-
-    pinctrl-0 = <&spi3_default>;
-    pinctrl-1 = <&spi3_sleep>;
-    pinctrl-names = "default", "sleep";
-
-    led_strip: ws2812@0 {
-        compatible = "worldsemi,ws2812-spi";
-
-        /* SPI */
-        reg = <0>; /* ignored, but necessary for SPI bindings */
-        spi-max-frequency = <4000000>;
-
-        /* WS2812 */
-        chain-length = <10>; /* arbitrary; change at will */
-        spi-one-frame = <0x70>;
-        spi-zero-frame = <0x40>;
-
-        color-mapping = <LED_COLOR_ID_GREEN LED_COLOR_ID_RED LED_COLOR_ID_BLUE>;
-    };
+    // A seção SPI3 e o RGB foram removidos
 };
 
 / {
+    // A seção 'chosen' do RGB foi removida
+
+    // --- ENCODERS: Definição dos Pinos e Configuração ---
+    // (Esta seção DEVE estar no seu arquivo overlay ou em um include)
+
     chosen {
-        zmk,underglow = &led_strip;
+        zmk,kscan = &kscan0;
+        zmk,matrix_transform = &default_transform;
+    };
+
+    encoders {
+        compatible = "zmk,encoders";
+
+        // Encoder Esquerdo (Master/Left)
+        encoder_left: encoder_0 {
+            status = "okay";
+            label = "LEFT_ENCODER";
+            // Pinos A e B para a rotação
+            a-gpios = <&gpio0 11 (GPIO_PULL_UP | GPIO_FLAGS_ENCODER_RA)>;
+            b-gpios = <&gpio0 10 (GPIO_PULL_UP | GPIO_FLAGS_ENCODER_RB)>;
+            // Pino do BOTÃO/SWITCH
+            s-gpios = <&gpio0 9 (GPIO_PULL_UP)>;
+        };
+
+        // Encoder Direito (Slave/Right)
+        encoder_right: encoder_1 {
+            status = "okay";
+            label = "RIGHT_ENCODER";
+            // Pinos A e B para a rotação
+            a-gpios = <&gpio0 15 (GPIO_PULL_UP | GPIO_FLAGS_ENCODER_RA)>;
+            b-gpios = <&gpio0 14 (GPIO_PULL_UP | GPIO_FLAGS_ENCODER_RB)>;
+            s-gpios = <&gpio0 17 (GPIO_PULL_UP)>; 
+        };
     };
 };
 // vim: filetype=dts fdm=marker:
