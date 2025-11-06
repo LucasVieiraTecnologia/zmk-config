@@ -1,22 +1,33 @@
 /*
- * Copyright (c) 2020 Ryan Cross
- *
- * SPDX-License-Identifier: MIT
+ * Sofle Left Overlay (Master) - nice!nano v2
+ * Configura o teclado esquerdo, o encoder esquerdo e a matriz de colunas.
+ * Este arquivo substitui as definições base do Sofle.
  */
 
 #include "sofle.dtsi"
 
 &kscan0 {
+    // Definição das colunas para o lado ESQUERDO (Índices 0 a 5)
+    // As referências de pino foram convertidas de &pro_micro para &gpio0 (nice!nano)
     col-gpios
-        = <&pro_micro 19 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 18 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 15 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 14 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 16 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 10 GPIO_ACTIVE_HIGH>
+        = <&gpio0 19 GPIO_ACTIVE_HIGH> // COL 0 (Exemplo: P19)
+        , <&gpio0 18 GPIO_ACTIVE_HIGH> // COL 1 (Exemplo: P18)
+        , <&gpio0 15 GPIO_ACTIVE_HIGH> // COL 2 (Exemplo: P15)
+        , <&gpio0 14 GPIO_ACTIVE_HIGH> // COL 3 (Exemplo: P14)
+        , <&gpio0 16 GPIO_ACTIVE_HIGH> // COL 4 (Exemplo: P16)
+        , <&gpio0 10 GPIO_ACTIVE_HIGH> // COL 5 (Exemplo: P10)
         ;
 };
 
+// --- ENCODER ESQUERDO (LEFT_ENCODER) ---
 &left_encoder {
     status = "okay";
+    label = "LEFT_ENCODER";
+    
+    // Pinos A e B para a rotação (Exemplo de pinagem)
+    a-gpios = <&gpio0 22 (GPIO_PULL_UP | GPIO_FLAGS_ENCODER_RA)>;
+    b-gpios = <&gpio0 20 (GPIO_PULL_UP | GPIO_FLAGS_ENCODER_RB)>;
+    
+    // Pino do BOTÃO (Switch) - Pino 21 como exemplo
+    s-gpios = <&gpio0 21 (GPIO_PULL_UP)>;
 };
