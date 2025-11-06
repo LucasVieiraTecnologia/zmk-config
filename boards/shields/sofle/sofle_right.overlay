@@ -1,26 +1,38 @@
 /*
- * Copyright (c) 2020 Ryan Cross
- *
- * SPDX-License-Identifier: MIT
+ * Sofle Right Overlay (Slave) - nice!nano v2
+ * Configura o teclado direito, o encoder direito e o offset de coluna.
  */
 
 #include "sofle.dtsi"
 
+// O offset de 6 garante que a matriz comece na coluna 6, como esperado pelo Sofle
 &default_transform {
     col-offset = <6>;
 };
 
 &kscan0 {
+    // Definição das colunas para o lado DIREITO (Índices 6 a 11)
+    // As referências de pino foram convertidas de &pro_micro para &gpio0 (nice!nano)
     col-gpios
-        = <&pro_micro 10 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 16 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 14 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 15 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 18 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 19 GPIO_ACTIVE_HIGH>
+        = <&gpio0 10 GPIO_ACTIVE_HIGH> // COL 6 (Exemplo: P10)
+        , <&gpio0 16 GPIO_ACTIVE_HIGH> // COL 7 (Exemplo: P16)
+        , <&gpio0 14 GPIO_ACTIVE_HIGH> // COL 8 (Exemplo: P14)
+        , <&gpio0 15 GPIO_ACTIVE_HIGH> // COL 9 (Exemplo: P15)
+        , <&gpio0 18 GPIO_ACTIVE_HIGH> // COL 10 (Exemplo: P18)
+        , <&gpio0 19 GPIO_ACTIVE_HIGH> // COL 11 (Exemplo: P19)
         ;
 };
 
+// --- ENCODER DIREITO (RIGHT_ENCODER) ---
 &right_encoder {
     status = "okay";
+    label = "RIGHT_ENCODER";
+    
+    // Pinos A e B para a rotação (Exemplo de pinagem)
+    a-gpios = <&gpio0 15 (GPIO_PULL_UP | GPIO_FLAGS_ENCODER_RA)>;
+    b-gpios = <&gpio0 14 (GPIO_PULL_UP | GPIO_FLAGS_ENCODER_RB)>;
+    
+    // PINO DO BOTÃO (Switch) - CORREÇÃO! P0.17
+    // Esta linha habilita o botão de pressionar o encoder direito.
+    s-gpios = <&gpio0 17 (GPIO_PULL_UP)>;
 };
