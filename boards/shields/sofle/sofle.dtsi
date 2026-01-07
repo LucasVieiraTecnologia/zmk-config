@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2020 Pete Johanson, Ryan Cross
- *
- * SPDX-License-Identifier: MIT
+ * SOFLE V1 / DANE EVANS MATRIX DEFINITION
  */
 
 #include <dt-bindings/zmk/matrix_transform.h>
@@ -31,18 +29,19 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5) RC(4,5) RC(4,6) RC(3,6) RC(3,7) 
         wakeup-source;
         diode-direction = "col2row";
 
-        /* * DEFINIÇÃO CORRETA PARA SOFLE V2/RGB
-         * Linhas nos pinos digitais 4, 5, 6, 7, 8
+        /* MATRIZ SOFLE V1 (Tente esta se a V2 falhou)
+         * Linhas nos pinos: 5, 6, 7, 8, 9
          */
         row-gpios
-            = <&pro_micro 4 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
-            , <&pro_micro 5 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+            = <&pro_micro 5 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
             , <&pro_micro 6 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
             , <&pro_micro 7 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
             , <&pro_micro 8 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+            , <&pro_micro 9 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
             ;
     };
 
+    /* Encoders desativados no arquivo base para evitar conflito */
     left_encoder: encoder_left {
         compatible = "alps,ec11";
         steps = <80>;
@@ -54,17 +53,10 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5) RC(4,5) RC(4,6) RC(3,6) RC(3,7) 
         steps = <80>;
         status = "disabled";
     };
-
-    sensors: sensors {
-        compatible = "zmk,keymap-sensors";
-        sensors = <&left_encoder &right_encoder>;
-        triggers-per-rotation = <20>;
-    };
 };
 
 &pro_micro_i2c {
     status = "okay";
-
     oled: ssd1306@3c {
         compatible = "solomon,ssd1306fb";
         reg = <0x3c>;
