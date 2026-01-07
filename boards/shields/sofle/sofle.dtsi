@@ -1,12 +1,12 @@
 /*
- * SOFLE V1 / DANE EVANS MATRIX DEFINITION
+ * SOFLE "DEBUG MODE" - SEM OLED, SEM LINHA 'D'
  */
 
 #include <dt-bindings/zmk/matrix_transform.h>
 
 / {
     chosen {
-        zephyr,display = &oled;
+        /* REMOVI O OLED DAQUI PARA PARAR O RUÍDO */
         zmk,kscan = &kscan0;
         zmk,matrix_transform = &default_transform;
     };
@@ -29,47 +29,23 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5) RC(4,5) RC(4,6) RC(3,6) RC(3,7) 
         wakeup-source;
         diode-direction = "col2row";
 
-        /* MATRIZ SOFLE V1 (Tente esta se a V2 falhou)
-         * Linhas nos pinos: 5, 6, 7, 8, 9
+        /* * TENTATIVA COM PINAGEM V1 (MAIS COMUM PARA DANE EVANS)
+         * TRUQUE: A linha 2 (tecla D) foi movida para o pino 0 (NC)
+         * para testar se o travamento para.
          */
         row-gpios
             = <&pro_micro 5 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
             , <&pro_micro 6 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
-            , <&pro_micro 7 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+            , <&gpio0 17 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* <--- TENTEI ISOLAR ESTE PINO */
             , <&pro_micro 8 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
             , <&pro_micro 9 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
             ;
     };
-
-    /* Encoders desativados no arquivo base para evitar conflito */
-    left_encoder: encoder_left {
-        compatible = "alps,ec11";
-        steps = <80>;
-        status = "disabled";
-    };
-
-    right_encoder: encoder_right {
-        compatible = "alps,ec11";
-        steps = <80>;
-        status = "disabled";
-    };
+    
+    /* ENCODERS DESATIVADOS */
 };
 
+/* I2C / OLED DESATIVADO COMPLETAMENTE */
 &pro_micro_i2c {
-    status = "okay";
-    oled: ssd1306@3c {
-        compatible = "solomon,ssd1306fb";
-        reg = <0x3c>;
-        width = <128>;
-        height = <32>;
-        segment-offset = <0>;
-        page-offset = <0>;
-        display-offset = <0>;
-        multiplex-ratio = <31>;
-        segment-remap;
-        com-invdir;
-        com-sequential;
-        inversion-on;
-        prechargep = <0x22>;
-    };
+    status = "disabled";
 };
