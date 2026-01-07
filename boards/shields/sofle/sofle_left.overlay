@@ -1,28 +1,50 @@
 /*
- * Sofle Left Overlay - Configuração Híbrida/V1
+ * SOFLE RGB - DEFINIÇÃO FORÇADA DE MATRIZ
+ * Substitui qualquer configuração herdada.
  */
 
-#include "sofle.dtsi"
+#include <dt-bindings/zmk/matrix_transform.h>
 
-&kscan0 {
-    /* COLUNAS PADRÃO SOFLE */
-    col-gpios
-        = <&pro_micro 21 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 20 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 19 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 18 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 15 GPIO_ACTIVE_HIGH>
-        , <&pro_micro 14 GPIO_ACTIVE_HIGH>
-        ;
+/ {
+    chosen {
+        zmk,kscan = &kscan0;
+    };
+
+    kscan0: kscan {
+        compatible = "zmk,kscan-gpio-matrix";
+        wakeup-source;
+        diode-direction = "col2row";
+
+        /* * PINAGEM SOFLE RGB (V2)
+         * Se "T" funcionou antes, essa é a pinagem de Colunas correta.
+         */
+        col-gpios
+            = <&pro_micro 21 GPIO_ACTIVE_HIGH>
+            , <&pro_micro 20 GPIO_ACTIVE_HIGH>
+            , <&pro_micro 19 GPIO_ACTIVE_HIGH>
+            , <&pro_micro 18 GPIO_ACTIVE_HIGH>
+            , <&pro_micro 15 GPIO_ACTIVE_HIGH>
+            , <&pro_micro 14 GPIO_ACTIVE_HIGH>
+            ;
+
+        /* * LINHAS DO SOFLE RGB
+         * Row 0 (Top): P4
+         * Row 1 (QWERTY): P5
+         * Row 2 (ASDFG): P6  <-- AQUI MORA O PROBLEMA DO "D"
+         * Row 3 (ZXCVB): P7
+         * Row 4 (Thumb): P8
+         */
+        row-gpios
+            = <&pro_micro 4 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+            , <&pro_micro 5 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+            , <&pro_micro 6 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+            , <&pro_micro 7 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+            , <&pro_micro 8 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+            ;
+    };
 };
 
-&left_encoder {
-    status = "okay";
-    /* Encoder na posição padrão V1/RGB */
-    a-gpios = <&pro_micro 16 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-    b-gpios = <&pro_micro 10 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-};
-
-&oled {
-    rotation = <0>;
+/* Desativa OLED para parar o chiado e o curto no pino SDA/SCL */
+&pro_micro_i2c {
+    status = "disabled";
 };
