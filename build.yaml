@@ -22,8 +22,10 @@ include:
   - board: nice_nano
     shield: sofle_left
     snippet: studio-rpc-usb-uart
-    cmake-args: -DCONFIG_ZMK_KEYBOARD_NAME="Sofle" -DCONFIG_ZMK_STUDIO=y
+    # REMOVI O KEYBOARD_NAME DAQUI POIS JA ESTA NO KCONFIG
+    cmake-args: -DCONFIG_ZMK_STUDIO=y
 
   - board: nice_nano
     shield: sofle_right
-    cmake-args: -DCONFIG_ZMK_KEYBOARD_NAME="Sofle"
+    # AQUI TAMBEM, LIMPO E SIMPLES
+    cmake-args: -DCONFIG_ZMK_STUDIO=y
